@@ -1,20 +1,18 @@
 ### README ###
 
-Za izradu ovog programa koristio sam "3rd party" knjiznice: glm, glfw, glew.
-Takoder sam koristio vlastite klase koje su spremljene u direktoriju enkapsulacije_H.
-Program je preveden i povezan u linux sustavu s naredbom:
-g++ -std=c++11  main.cpp enkapsulacije_H/*cpp -lglfw -lGLU -lGL -lGLEW
+### Usage ###
 
-### Koristenje ###
+This program is comprised of 4 states which can be shuffled through by using "1"-"4" keys on your keyboard:
+1) A simple scene with a directional light source, using the Shadow Mapping technique
+2) A simple scene with a directional light source, using the Variance Shadow Mapping technique
+3) A simple scene with a positional light source, using the Shadow Mapping technique
+4) A simple scene with a positional light source, using the Shadow Volume technique
 
-Program se sastoji od 4 stanja koja se mijenjaju pritiskom tipki:
-1) Jednostavna mapa sjena pod utjecajem direckcijskog svijetla
-2) Variance mapa sjena pod utjecajem direckcijskog svijetla
-3) Mapa sjena pod utjecajem pozicijskog svijetla
-4) Volumne sjene pod utjecajem pozicijskog svijetla
+A light source present in each state is automatically moved in each frame but you can pause it by pressing "L".
+By pressing "Q" in the 2nd and 3rd state you can turn on / off the PCF filtering technique (It is turned off by default).
 
-Svijetlo je programirano da se mice pos x osi kako bi se bolje primjetili nedostaci i prednosti svake tehnike.
+### Tools used ###
+g++.
+glm, glfw, glew libraries.
 
-Za prijelaz izmedu stanja potrebno je pritisnuti tipke 1 - 4.
-Za zaustavljanje svijetla potrebno je pritisnuti tipku L.
-Pritiskom tipke Q u drugom i trecem stanju ukljucuje / iskljucuje se PCF filtriranje sjena.
+Compiled and linked with: "g++ -std=c++11  main.cpp enkapsulacije_H/*cpp -lglfw -lGLU -lGL -lGLEW"
