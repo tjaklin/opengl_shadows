@@ -4,9 +4,10 @@
 #include <cstdio>
 
 #include "inc/Window.hpp"
+#include "inc/Camera.hpp"
+
 /*
     #include "inc/Model.h"
-    #include "inc/Camera.h"
     #include "inc/ShadowMap_dir.h"
     #include "inc/ShadowMap_omni.h"
     #include "inc/ShadowVolume.h"
@@ -38,6 +39,16 @@ int main(int argc, char** argv)
     (void) argc; (void) argv;
 
     Window window(640, 480, "OpenGL Sjene");
+
+	// Camera test.
+	glm::vec3 eyePosition = glm::vec3(-5.0f, 2.0f,-5.0f);
+
+	Camera eye;
+	eye.SetViewMatrix(eyePosition, glm::vec3( 3.0f, -2.7f, 3.0f), glm::vec3(0,1,0));
+	eye.SetPerspectiveProjectionMatrix(45.0f, 4.0f/3.0f, 1.0f, 100.0f);
+
+	auto v = eye.GetViewMatrix();
+	auto p = eye.GetProjectionMatrix();
 
     while (!window.ShouldClose())
     {
