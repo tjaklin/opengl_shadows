@@ -1,15 +1,20 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
+#include "glm-lib/glm.hpp"  // Ignore this. VScode can't find it, but G++ can via -I from Makefile.
+// TODO: Ubacit sve ove '3rd party dependencije' u Dependency folder, koji je dio projekta samoga !
 
-#include "enkapsulacije_H/initEverything.h"
-#include "enkapsulacije_H/model.h"
-#include "enkapsulacije_H/camera.h"
-#include "enkapsulacije_H/ShadowMap_dir.h"
-#include "enkapsulacije_H/ShadowMap_omni.h"
-#include "enkapsulacije_H/ShadowVolume.h"
-#include "enkapsulacije_H/ShadowMap_variance.h"
+#include <cstdio>
 
+/*
+    #include "enkapsulacije_H/initEverything.h"
+    #include "enkapsulacije_H/model.h"
+    #include "enkapsulacije_H/camera.h"
+    #include "enkapsulacije_H/ShadowMap_dir.h"
+    #include "enkapsulacije_H/ShadowMap_omni.h"
+    #include "enkapsulacije_H/ShadowVolume.h"
+    #include "enkapsulacije_H/ShadowMap_variance.h"
+*/
+/*
 void checKeyState( uint* state, bool* isMoving, bool* isPCF, GLFWwindow* mWindow ){
 	if (glfwGetKey( mWindow, GLFW_KEY_1 ) == GLFW_PRESS)
 		*state = 1;
@@ -26,9 +31,21 @@ void checKeyState( uint* state, bool* isMoving, bool* isPCF, GLFWwindow* mWindow
 		if (glfwGetKey( mWindow, GLFW_KEY_Q ) == GLFW_RELEASE)
 			*isPCF = !*isPCF;
 }
+*/
 
-int main(){
+int main(int argc, char** argv)
+{
 
+    printf("Radi!\n");
+
+    return 0;
+}
+
+
+/*
+
+int old_main_version()
+{
 const GLint WINDOW_WIDTH = 1024,  WINDOW_HEIGHT = 1024,
 	  SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 const GLfloat omni_PROJ_RATIO = (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT;
@@ -347,3 +364,5 @@ glfwTerminate();
 
 return 0;
 }
+
+*/
