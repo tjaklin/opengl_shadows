@@ -1,19 +1,18 @@
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include "glm-lib/glm.hpp"  // Ignore this. VScode can't find it, but G++ can via -I from Makefile.
 // TODO: Ubacit sve ove '3rd party dependencije' u Dependency folder, koji je dio projekta samoga !
 
 #include <cstdio>
 
+#include "inc/Window.hpp"
 /*
-    #include "enkapsulacije_H/initEverything.h"
-    #include "enkapsulacije_H/model.h"
-    #include "enkapsulacije_H/camera.h"
-    #include "enkapsulacije_H/ShadowMap_dir.h"
-    #include "enkapsulacije_H/ShadowMap_omni.h"
-    #include "enkapsulacije_H/ShadowVolume.h"
-    #include "enkapsulacije_H/ShadowMap_variance.h"
+    #include "inc/Model.h"
+    #include "inc/Camera.h"
+    #include "inc/ShadowMap_dir.h"
+    #include "inc/ShadowMap_omni.h"
+    #include "inc/ShadowVolume.h"
+    #include "inc/ShadowMap_variance.h"
 */
+
 /*
 void checKeyState( uint* state, bool* isMoving, bool* isPCF, GLFWwindow* mWindow ){
 	if (glfwGetKey( mWindow, GLFW_KEY_1 ) == GLFW_PRESS)
@@ -35,8 +34,16 @@ void checKeyState( uint* state, bool* isMoving, bool* isPCF, GLFWwindow* mWindow
 
 int main(int argc, char** argv)
 {
+    // Ignore input data for now.
+    (void) argc; (void) argv;
 
-    printf("Radi!\n");
+    Window window(640, 480, "OpenGL Sjene");
+
+    while (!window.ShouldClose())
+    {
+        window.Update();
+        window.Draw();
+    }
 
     return 0;
 }
