@@ -1,5 +1,7 @@
 #include "../inc/Window.hpp"
 
+#include <cstdio>
+
 Window::Window(int width, int height, const char* title)
 {
     if (glfwInit() != GLFW_TRUE)
@@ -37,9 +39,19 @@ Window::~Window()
     _window = nullptr;
 }
 
+void Window::Clear() const
+{
+    glClearColor(0.2f, 1.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
 void Window::Update() const
 {
     glfwPollEvents();
+
+    // Temporary Input query mechanism.
+    if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(_window, GLFW_TRUE); }
+    if (glfwGetKey(_window, GLFW_KEY_1) == GLFW_PRESS) { printf("[Key] Key 1 pressed.\n"); }
 }
 
 void Window::Draw() const

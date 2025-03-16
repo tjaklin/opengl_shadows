@@ -9,6 +9,7 @@ public:
     Window(int width, int height, const char* title);
     ~Window();
 
+    void Clear() const;
     void Update() const;
     void Draw() const;
 

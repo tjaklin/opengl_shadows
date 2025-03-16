@@ -1,13 +1,23 @@
-#include "glm-lib/glm.hpp"  // Ignore this. VScode can't find it, but G++ can via -I from Makefile.
-// TODO: Ubacit sve ove '3rd party dependencije' u Dependency folder, koji je dio projekta samoga !
+// TODO: Ubacit sve ove '3rd party dependencije' u Dependency folder, koji je dio
+//			projekta samoga !
+// TODO: Gornji tudu malo izmjenit, na nacin da zapravo ne ubacim sve dependensije u
+//			zaseban Dependency folder, nego da umjesto toga, u repozitorij, ubacim
+//			koristenje CMake-a, umjesto trenutnog Make-a. Zatim sa tim CMake-om mogu
+//			napisat pravila za ocekivane Dependencyje koje projekt koristi i, kaj
+//			napravit u slucaju da nisu pristuni (tj. napisat pravilo da se Dependencyji
+//			automacki skinu s githaba) !
 
 #include <cstdio>
 
 #include "inc/Window.hpp"
 #include "inc/Camera.hpp"
+#include "inc/Model.hpp"
+#include "inc/VertexParser.hpp"
+
+// TODO: Replace this with a 'Shader' class.
+GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path);
 
 /*
-    #include "inc/Model.h"
     #include "inc/ShadowMap_dir.h"
     #include "inc/ShadowMap_omni.h"
     #include "inc/ShadowVolume.h"
@@ -40,28 +50,73 @@ int main(int argc, char** argv)
 
     Window window(640, 480, "OpenGL Sjene");
 
-	// Camera test.
-	glm::vec3 eyePosition = glm::vec3(-5.0f, 2.0f,-5.0f);
-
+	// Prepare the scene's camera object.
 	Camera eye;
+	glm::vec3 eyePosition = glm::vec3(-5.0f, 2.0f,-5.0f);
 	eye.SetViewMatrix(eyePosition, glm::vec3( 3.0f, -2.7f, 3.0f), glm::vec3(0,1,0));
 	eye.SetPerspectiveProjectionMatrix(45.0f, 4.0f/3.0f, 1.0f, 100.0f);
+	auto eyeView = eye.GetViewMatrix();
+	auto eyeProjection = eye.GetProjectionMatrix();
 
-	auto v = eye.GetViewMatrix();
-	auto p = eye.GetProjectionMatrix();
+	// Prepare 3D shape data.
+	const char* cube_vertices_filepath = "vertices/cube.txt";
+	VertexParser cubeParser(cube_vertices_filepath);
+	if (!cubeParser.ProcessFile()) return 1;
+	
+	ShapeVertices cube;
+	cube.data = cubeParser.Data();
+	cube.size = cubeParser.DataSize();
 
+	// Model test.
+	Model kocka(&cube.data[0], cube.size);
+	kocka.SetScale(7.0f);
+	kocka.SetTranslation(glm::vec3(6.0f, -4.3f, 4.6f));
+	auto kockaModel = kocka.GetModelMatrix();
+
+	// TODO: Tu budem privremeno implementiral 'Shader' klasu, cija bude uloga da
+	//	mi dozvoli da na jednostavan nacin napravim 'default' shadere uz ciju pomoc
+	//	bum nacrtal nekaj sa 'Model' objektima na ekran. Trebaju mi ti defaultni
+	//	shaderi da vidim dal mi radi 'Model' klasa nakon refaktoriranja.
+	const char* vertexShaderFilepath = "shaders/default.vs";
+	const char* fragmentShaderFilepath = "shaders/default.fs";
+	GLuint defaultShader = LoadShaders(vertexShaderFilepath, fragmentShaderFilepath);
+
+	// Main update and draw loop.
     while (!window.ShouldClose())
     {
-        window.Update();
+		window.Clear();
+		window.Update();
+	
+		// Set the shader and it's data.
+		glUseProgram(defaultShader);
+
+		// Position the object.
+		glUniformMatrix4fv(glGetUniformLocation(defaultShader, "model"), 1, GL_FALSE, &kockaModel[0][0]);
+		glUniformMatrix4fv(glGetUniformLocation(defaultShader, "view"), 1, GL_FALSE, &eyeView[0][0]);
+		glUniformMatrix4fv(glGetUniformLocation(defaultShader, "projection"), 1, GL_FALSE, &eyeProjection[0][0]);
+		// Draw the object.
+		kocka.Draw(0);
+	
+		// Display Window's framebuffer.
         window.Draw();
+
+		//SM_dir.secondPassSetup();	// Postavi Viewport, zeljeni Shader, napravi glClear().
+
+		//SM_dir.setModel( kocke[0].getModelMAT() ); // glUniformMatrix4fv(glGetUniformLocation(shader_lightingID, "model") ...
+		//SM_dir.setView ( eye.getView() ); // glUniformMatrix4fv(glGetUniformLocation(shader_lightingID, "view" ) ...
+		//SM_dir.setProj ( eye.getProj() ); // glUniformMatrix4fv(glGetUniformLocation(shader_lightingID, "projection") ...
+
+		//lightBiasMVP = biasMVP * lightMVP; // Neka magija
+
+		//SM_dir.setLightDir( dLight.position );	// glUniform3f( glGetUniformLocation(shader_lightingID, "lightDir") ...
+		//SM_dir.setBiasedLightMVP( lightBiasMVP ); // glUniformMatrix4fv(glGetUniformLocation(shader_lightingID, "lBiasMVP") ...
+		//SM_dir.setDepthTexture( 1 );	// ... Nikaj bitno za osnovno crtanje.
     }
 
     return 0;
 }
 
-
 /*
-
 int old_main_version()
 {
 const GLint WINDOW_WIDTH = 1024,  WINDOW_HEIGHT = 1024,
@@ -384,3 +439,100 @@ return 0;
 }
 
 */
+
+#include <fstream>
+#include <string>
+
+GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path)
+{
+	// Create the shaders
+	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+	// Read the Vertex Shader code from the file
+	std::string VertexShaderCode;
+	std::ifstream VertexShaderStream(vertex_file_path, std::ios::in);
+	if(VertexShaderStream.is_open()){
+		std::string Line = "";
+		while(getline(VertexShaderStream, Line))
+			VertexShaderCode += "\n" + Line;
+		VertexShaderStream.close();
+	}else{
+		printf("Impossible to open %s. Are you in the right directory ? Don't forget to read the FAQ !\n", vertex_file_path);
+		getchar();
+		return 0;
+	}
+
+	// Read the Fragment Shader code from the file
+	std::string FragmentShaderCode;
+	std::ifstream FragmentShaderStream(fragment_file_path, std::ios::in);
+	if(FragmentShaderStream.is_open()){
+		std::string Line = "";
+		while(getline(FragmentShaderStream, Line))
+			FragmentShaderCode += "\n" + Line;
+		FragmentShaderStream.close();
+	}
+
+	GLint Result = GL_FALSE;
+	int InfoLogLength;
+
+
+	// Compile Vertex Shader
+	printf("Compiling shader : %s\n", vertex_file_path);
+	char const * VertexSourcePointer = VertexShaderCode.c_str();
+	glShaderSource(VertexShaderID, 1, &VertexSourcePointer , NULL);
+	glCompileShader(VertexShaderID);
+
+	// Check Vertex Shader
+	glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
+	glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+	if ( InfoLogLength > 0 ){
+		std::vector<char> VertexShaderErrorMessage(InfoLogLength+1);
+		glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
+		printf("%s\n", &VertexShaderErrorMessage[0]);
+	}
+
+
+
+	// Compile Fragment Shader
+	printf("Compiling shader : %s\n", fragment_file_path);
+	char const * FragmentSourcePointer = FragmentShaderCode.c_str();
+	glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer , NULL);
+	glCompileShader(FragmentShaderID);
+
+	// Check Fragment Shader
+	glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
+	glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+	if ( InfoLogLength > 0 ){
+		std::vector<char> FragmentShaderErrorMessage(InfoLogLength+1);
+		glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
+		printf("%s\n", &FragmentShaderErrorMessage[0]);
+	}
+
+
+
+	// Link the program
+	printf("Linking program\n");
+	GLuint ProgramID = glCreateProgram();
+	glAttachShader(ProgramID, VertexShaderID);
+	glAttachShader(ProgramID, FragmentShaderID);
+	glLinkProgram(ProgramID);
+
+	// Check the program
+	glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
+	glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+	if ( InfoLogLength > 0 ){
+		std::vector<char> ProgramErrorMessage(InfoLogLength+1);
+		glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+		printf("%s\n", &ProgramErrorMessage[0]);
+	}
+
+	
+	glDetachShader(ProgramID, VertexShaderID);
+	glDetachShader(ProgramID, FragmentShaderID);
+	
+	glDeleteShader(VertexShaderID);
+	glDeleteShader(FragmentShaderID);
+
+	return ProgramID;
+}

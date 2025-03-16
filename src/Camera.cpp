@@ -2,7 +2,7 @@
 
 void Camera::SetViewMatrix(glm::vec3 pos, glm::vec3 dir, glm::vec3 up)
 {
-	_view = glm::lookAt( pos, dir, up );
+	_view = glm::lookAt(pos, dir, up);
 
 	_position = pos;
 	_direction = dir;
@@ -37,18 +37,12 @@ void Camera::SetViewAndProjectionMatrix(glm::vec3 pos)
 	//	vratiti i pregledat dal je potrebno ovo preuredit !
 	_view_and_projection.clear();
 
-	_view_and_projection.push_back( _projection * glm::lookAt( pos, pos + glm::vec3(1.0,0.0,0.0), glm::vec3(0.0,-1.0,0.0)));
-
-	_view_and_projection.push_back( _projection * glm::lookAt( pos, pos + glm::vec3(-1.0,0.0,0.0), glm::vec3(0.0,-1.0,0.0)));
-
-	_view_and_projection.push_back( _projection * glm::lookAt( pos, pos + glm::vec3(0.0,1.0,0.0), glm::vec3(0.0,0.0,1.0)));
-
-	_view_and_projection.push_back( _projection * glm::lookAt( pos, pos + glm::vec3(0.0,-1.0,0.0), glm::vec3(0.0,0.0,-1.0)));
-
-	_view_and_projection.push_back( _projection * glm::lookAt( pos, pos + glm::vec3(0.0,0.0,1.0), glm::vec3(0.0,-1.0,0.0)));
-
-	_view_and_projection.push_back( _projection * glm::lookAt( pos, pos + glm::vec3(0.0,0.0,-1.0), glm::vec3(0.0,-1.0,0.0)));
-
+	_view_and_projection.push_back(_projection * glm::lookAt(pos, pos + glm::vec3(1.0,0.0,0.0), glm::vec3(0.0,-1.0,0.0)));
+	_view_and_projection.push_back(_projection * glm::lookAt(pos, pos + glm::vec3(-1.0,0.0,0.0), glm::vec3(0.0,-1.0,0.0)));
+	_view_and_projection.push_back(_projection * glm::lookAt(pos, pos + glm::vec3(0.0,1.0,0.0), glm::vec3(0.0,0.0,1.0)));
+	_view_and_projection.push_back(_projection * glm::lookAt(pos, pos + glm::vec3(0.0,-1.0,0.0), glm::vec3(0.0,0.0,-1.0)));
+	_view_and_projection.push_back(_projection * glm::lookAt(pos, pos + glm::vec3(0.0,0.0,1.0), glm::vec3(0.0,-1.0,0.0)));
+	_view_and_projection.push_back(_projection * glm::lookAt(pos, pos + glm::vec3(0.0,0.0,-1.0), glm::vec3(0.0,-1.0,0.0)));
 }
 
 glm::mat4 Camera::GetViewMatrix() const
