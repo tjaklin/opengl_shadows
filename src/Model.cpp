@@ -1,6 +1,6 @@
 #include "../inc/Model.hpp"
 
-Model::Model(const float* vbo, const int vbo_size)
+Model::Model(const float* vbo, const unsigned int vbo_size)
 {
 	// TODO: [Refactoring] Necu da mi se u ovu metodu salje pointer na
 	// objekte iz 'meshVertices.cpp' jer me to tjera na plač. Umjesto
@@ -21,14 +21,14 @@ Model::Model(const float* vbo, const int vbo_size)
 
 	glGenBuffers(1, &_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vbo_size, (const void*) vbo, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vbo_size, (const void*) vbo, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	// Unbind VAO after setting all the data.
 	glBindVertexArray(0);
 
-	_number_of_vertices = (GLuint) vbo_size / 3;
+	_number_of_vertices = (GLuint) vbo_size / (3 * sizeof(float));
 }
 
 Model::~Model()

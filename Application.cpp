@@ -10,7 +10,7 @@
 #include "inc/Window.hpp"
 #include "inc/Camera.hpp"
 #include "inc/Model.hpp"
-#include "inc/VertexParser.hpp"
+#include "inc/VertexAttributeParser.hpp"
 #include "inc/Shader.hpp"
 
 /*
@@ -55,24 +55,21 @@ int main(int argc, char** argv)
 	auto eyeProjection = eye.GetProjectionMatrix();
 
 	// Prepare 3D shape data.
-	const char* cube_vertices_filepath = "vertices/cube.txt";
-	VertexParser cubeParser(cube_vertices_filepath);	// TODO: Mozda u static klasu pretvorit.
-	if (!cubeParser.ProcessFile()) return 1;
-	
-	ShapeVertices cube;
-	cube.data = cubeParser.Data();
-	cube.size = cubeParser.DataSize();
+	const char* cube_position_filepath = "vertices/cube_position.txt";
+	const char* cube_color_filepath = "vertices/cube_color.txt";
+
+	VertexAttribute position = VertexAttributeParser::ProcessFile(cube_position_filepath);
+	if (position.data.empty()) { printf("VertexAttribute is empty. Exiting.\n"); return -1; }
+
+	VertexAttribute color = VertexAttributeParser::ProcessFile(cube_color_filepath);
+	if (color.data.empty()) { printf("VertexAttribute is empty. Exiting.\n"); return -1; }
 
 	// Model test.
-	Model kocka(&cube.data[0], cube.size);
-	kocka.SetScale(7.0f);
+	Model kocka(position.data.data(), position.count * sizeof(float));
+	kocka.SetScale(5.0f);
 	kocka.SetTranslation(glm::vec3(6.0f, -4.3f, 4.6f));
 	auto kockaModel = kocka.GetModelMatrix();
 
-	// TODO: Tu budem privremeno implementiral 'Shader' klasu, cija bude uloga da
-	//	mi dozvoli da na jednostavan nacin napravim 'default' shadere uz ciju pomoc
-	//	bum nacrtal nekaj sa 'Model' objektima na ekran. Trebaju mi ti defaultni
-	//	shaderi da vidim dal mi radi 'Model' klasa nakon refaktoriranja.
 	const char* vertexShaderFilepath = "shaders/default.vs";
 	const char* fragmentShaderFilepath = "shaders/default.fs";
 	Shader defaultShader(vertexShaderFilepath, fragmentShaderFilepath);

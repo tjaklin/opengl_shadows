@@ -13,7 +13,7 @@ public:
 	// NOTE: Currently, only a single Vertex Attribute is supported (Position).
 	//	It will be necessary to add at least the Normal and TextureUV (Color would be
 	//	preferrable too) Vertex Attributes.
-	Model(const float* vbo, const int vbo_size);
+	Model(const float* vbo, const unsigned int vbo_size);
 	~Model();
 
 	void SetScale(float factor);
