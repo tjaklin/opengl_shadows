@@ -56,20 +56,31 @@ int main(int argc, char** argv)
 
 	// Prepare 3D shape data.
 	const char* cube_position_filepath = "vertices/cube_position.txt";
-	const char* cube_color_filepath = "vertices/cube_color.txt";
-
 	VertexAttribute position = VertexAttributeParser::ProcessFile(cube_position_filepath);
 	if (position.data.empty()) { printf("VertexAttribute is empty. Exiting.\n"); return -1; }
-
+	
+	const char* cube_color_filepath = "vertices/cube_color.txt";
 	VertexAttribute color = VertexAttributeParser::ProcessFile(cube_color_filepath);
 	if (color.data.empty()) { printf("VertexAttribute is empty. Exiting.\n"); return -1; }
 
-	// Model test.
-	Model kocka(position.data.data(), position.count * sizeof(float));
-	kocka.SetScale(5.0f);
-	kocka.SetTranslation(glm::vec3(6.0f, -4.3f, 4.6f));
+	// Prepare 'Model' data. That's about all the necessary data that's needed
+	//	for a shape to get drawn on screen.
+	Model kocka;
+	kocka.PushVertexAttribute(position, 0);
+	kocka.PushVertexAttribute(color, 1);
+	kocka.SetScale(4.0f);
+	kocka.SetTranslation(glm::vec3(20.0f, -4.3f, 4.6f));
 	auto kockaModel = kocka.GetModelMatrix();
 
+	// Prepare a model for a cube that acts as the scene's light source.
+	Model izvor_svjetla;
+	izvor_svjetla.PushVertexAttribute(position, 0);
+	izvor_svjetla.PushVertexAttribute(color, 1);
+	izvor_svjetla.SetScale(0.25f);
+	izvor_svjetla.SetTranslation(glm::vec3(-1.0f, 0.3f, 0.6f));
+	auto izvorModel = izvor_svjetla.GetModelMatrix();
+
+	// Prepare shader data.
 	const char* vertexShaderFilepath = "shaders/default.vs";
 	const char* fragmentShaderFilepath = "shaders/default.fs";
 	Shader defaultShader(vertexShaderFilepath, fragmentShaderFilepath);
@@ -82,13 +93,18 @@ int main(int argc, char** argv)
 		window.Clear();
 		window.Update();
 
-		// Position the object.
-		glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &kockaModel[0][0]);
+		// Forward View and Projection matrix data to the shader.
 		glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE, &eyeView[0][0]);
 		glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, &eyeProjection[0][0]);
 
-		// Draw the object.
+		// Position and draw the object.
+		glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &kockaModel[0][0]);
 		kocka.Draw(0);	
+
+		// Position and draw the object.
+		glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &izvorModel[0][0]);
+		izvor_svjetla.Draw(0);
+
 		// Display Window's framebuffer.
         window.Draw();
 
