@@ -1,42 +1,83 @@
 #include "../inc/Model.hpp"
 
-Model::Model(const float* vbo, const int vbo_size)
+#include <cstdio>
+
+Model::Model()
 {
-	// TODO: [Refactoring] Necu da mi se u ovu metodu salje pointer na
-	// objekte iz 'meshVertices.cpp' jer me to tjera na plač. Umjesto
-	// toga, hocu napisati neku klasicu koja bi se bavila citanjem
-	// '.txt' fajlova (u kojima bi bili zadani vertex attributi za polozaj
-	// tocaka nekog oblika). Ta klasica bi procitane podatke punila u neki
-	// float array (ili slicno) i vratila bi taj array nazad nama nakoristenje.
-	// Onda se taj array posalje ko argument ovoj tu metodi. S tim sam dobil da
-	// se lako moze zadati novi oblik kroz .txt fajl i nemora se nist rekompa-
-	// jlirati (nego se samo ponovno pokrene program).
-	// DODATNO, nekaj takvog vec imam za citanje 'Shader-a' ??
-
-	if (!vbo) { return; }
-	// TODO: Kak da se implementira 'throw' iz konstruktora, u slucajevima
-	//	da dojde do greske u samome konstruktoru ?
 	glGenVertexArrays(1, &_vao);
-	glBindVertexArray(_vao);
-
-	glGenBuffers(1, &_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vbo_size, (const void*) vbo, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	// Unbind VAO after setting all the data.
-	glBindVertexArray(0);
-
-	_number_of_vertices = (GLuint) vbo_size / 3;
 }
 
 Model::~Model()
 {
 	glDeleteVertexArrays(1, &_vao);
-	glDeleteBuffers(1, &_vbo);
-	_vao = 0;
-	_vbo = 0;
+	_vao = 255;	// 255 means invalid value.
+
+	// If _vbo hodls a valid buffer in OpenGL land, delete it!
+	if (_vbo != 255)
+	{
+		glDeleteBuffers(1, &_vbo);
+		_vbo = 255; // 255 means invalid value.
+	}
+}
+
+void Model::PushVertexAttribute(VertexAttribute& attribute, unsigned int location)
+{
+	// TODO: This method could still use some cleaning up !
+
+	// If _vbo already holds a buffer in OpenGL, make sure to
+	//	copy it's data to the new buffer that we're about to
+	//	create.
+	if (_vbo == 255)
+	{
+		GLuint new_vbo = 255;
+		glGenBuffers(1, &new_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, new_vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * attribute.count,
+			attribute.data.data(), GL_STATIC_DRAW);
+
+		glBindVertexArray(_vao);
+		glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (const void*) 0);// Position only.
+		_vbo = new_vbo;
+	}
+	else
+	{
+		// TODO: What will 'current_size' be if _vbo is '255' ?
+		GLint current_size = 0;
+		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+		glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &current_size);
+
+		GLint new_size = current_size + (sizeof(float) * attribute.count);
+		GLuint new_vbo;
+		glGenBuffers(1, &new_vbo);
+		glBindBuffer(GL_COPY_WRITE_BUFFER, new_vbo);
+		glBufferData(GL_COPY_WRITE_BUFFER, new_size, nullptr, GL_STATIC_DRAW);
+		glBindBuffer(GL_COPY_READ_BUFFER, _vbo);
+		glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, current_size);
+		glBufferSubData(GL_COPY_WRITE_BUFFER, current_size,
+			sizeof(float) * attribute.count, attribute.data.data());
+
+		// Unbind the Read and Write targets.
+		glBindBuffer(GL_COPY_READ_BUFFER, 0);
+		glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
+		// Delete the old one and keep the new vbo handle.
+		glDeleteBuffers(1, &_vbo);
+		_vbo = new_vbo;
+
+		// Bind the Array target and VAO.
+		glBindVertexArray(_vao);
+		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+		// TODO: Correctly set up the VertexAttribute pointers.
+		//	Currently it works only because i know what VAttributes i want to use
+		//	look like . . . Make it better later !
+		(void) location;	// Use this instead, once the time comes.
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (const void*) 0);			// Position
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (const void*) current_size);	// Color
+	}
+
+	// Unbind VAO after setting all the data.
+	glBindVertexArray(0);
+
+	_number_of_vertices = (GLuint) attribute.count / 3;	// Divide by 3 dimensions.
 }
 
 void Model::Draw(unsigned int attributes) const
@@ -45,8 +86,12 @@ void Model::Draw(unsigned int attributes) const
 	glBindVertexArray(_vao);
 
 	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+
 	glDrawArrays(GL_TRIANGLES, 0, _number_of_vertices);
+
 	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 
 	glBindVertexArray(0);
 

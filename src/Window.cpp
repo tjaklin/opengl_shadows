@@ -31,6 +31,14 @@ Window::Window(int width, int height, const char* title)
         glfwTerminate();
         return;
     }
+
+    // Enable some capabilities.
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    /*
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    */
 }
 
 Window::~Window()
@@ -42,7 +50,7 @@ Window::~Window()
 void Window::Clear() const
 {
     glClearColor(0.2f, 1.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Window::Update() const
@@ -50,8 +58,11 @@ void Window::Update() const
     glfwPollEvents();
 
     // Temporary Input query mechanism.
-    if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(_window, GLFW_TRUE); }
-    if (glfwGetKey(_window, GLFW_KEY_1) == GLFW_PRESS) { printf("[Key] Key 1 pressed.\n"); }
+    if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(_window, GLFW_TRUE);
+
+    else if (glfwGetKey(_window, GLFW_KEY_1) == GLFW_PRESS)
+        printf("[Key] Key 1 pressed.\n");
 }
 
 void Window::Draw() const
