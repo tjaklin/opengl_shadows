@@ -17,9 +17,9 @@ void main()
 	vec4 pos = vec4(position, 1.0f );
 	vec4 nor = vec4(normal , 0.0f );
 
-	light_position = lBiasMVP * pos;
 	eye_position   = (view * model * pos).xyz;
 	eye_normals    = (view * model * nor).xyz;
 
+	light_position = lBiasMVP * pos;
 	gl_Position = projection * view * model * pos;
 }

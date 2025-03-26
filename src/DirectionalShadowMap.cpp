@@ -7,7 +7,6 @@ DirectionalShadowMap::DirectionalShadowMap(uint shadow_w, uint shadow_h, uint wi
 	: _shadow_width(shadow_w), _shadow_height(shadow_h), _window_width(window_w),
 		_window_height(window_h), _fbo(255), _depth_texture(255)
 {
-	;
 }
 
 DirectionalShadowMap::~DirectionalShadowMap()
@@ -64,7 +63,8 @@ void DirectionalShadowMap::PrepareFBOandTexture()
 		return;
 	}
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -79,12 +79,8 @@ void DirectionalShadowMap::FirstPassSetup()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, _fbo);
 	glViewport(0, 0, _shadow_width, _shadow_height);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	glClear(GL_DEPTH_BUFFER_BIT);
 	_depth->Bind();
-
-	glCullFace(GL_BACK);
-	glEnable(GL_CULL_FACE);
 }
 
 void DirectionalShadowMap::SecondPassSetup()
@@ -92,10 +88,7 @@ void DirectionalShadowMap::SecondPassSetup()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, _window_width, _window_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	_light->Bind();
-
-	glCullFace(GL_BACK);
 }
 
 void DirectionalShadowMap::SetModelMatrix(glm::mat4 m)
@@ -146,4 +139,9 @@ void DirectionalShadowMap::BindDepthTexture() const
 void DirectionalShadowMap::UnbindDepthTexture() const
 {
    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+GLuint DirectionalShadowMap::GetTexture() const
+{
+	return _depth_texture;
 }

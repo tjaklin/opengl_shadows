@@ -6,7 +6,7 @@ FLAGS_LINKER =-lGL -lGLU -lGLEW -lglfw
 
 FILES_SOURCE =Application.cpp src/Window.cpp src/Camera.cpp \
 	src/VertexAttributeParser.cpp src/Model.cpp src/Shader.cpp \
-	src/Scene.cpp src/DefaultScene.cpp \
+	src/Scene.cpp src/DefaultScene.cpp src/ShadowMapScene.cpp \
 	src/DirectionalShadowMap.cpp
 
 #FILES_HEADER =???
@@ -47,6 +47,10 @@ obj/src/Scene.o: src/Scene.cpp inc/Scene.hpp inc/Window.hpp inc/Model.hpp \
 	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
 
 obj/src/DefaultScene.o: src/DefaultScene.cpp inc/DefaultScene.hpp inc/Scene.hpp
+	mkdir -p obj/src/
+	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
+
+obj/src/ShadowMapScene.o: src/ShadowMapScene.cpp inc/ShadowMapScene.hpp inc/Scene.hpp
 	mkdir -p obj/src/
 	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
 

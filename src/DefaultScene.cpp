@@ -12,6 +12,7 @@ void DefaultScene::Run() const
 	glm::vec3 eyePosition = glm::vec3(-5.0f, 2.0f,-5.0f);
 	eye.SetViewMatrix(eyePosition, glm::vec3( 3.0f, -2.7f, 3.0f), glm::vec3(0,1,0));
 	eye.SetPerspectiveProjectionMatrix(45.0f, 4.0f/3.0f, 1.0f, 100.0f);
+	
 	// Set this object as the scene's main camera object.
 	// This enables it to handle movement input events.
 	_window->SetCamera(&eye);

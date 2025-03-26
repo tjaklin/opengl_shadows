@@ -33,6 +33,8 @@ public:
 	void BindDepthTexture() const;
 	void UnbindDepthTexture() const;
 
+	GLuint GetTexture() const;
+
 private:
 	uint _shadow_width;
 	uint _shadow_height;
