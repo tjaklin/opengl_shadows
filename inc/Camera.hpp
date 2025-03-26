@@ -35,6 +35,8 @@ public:
 	
     void SetViewAndProjectionMatrix(glm::vec3 pos);
 
+	void HandleMovement(const glm::vec3& movement_direction);
+
 	glm::mat4 GetViewMatrix() const;
 	glm::mat4 GetProjectionMatrix() const;
 	std::vector<glm::mat4> GetViewAndProjectionMatrix() const;

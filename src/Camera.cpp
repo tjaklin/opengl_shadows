@@ -45,6 +45,15 @@ void Camera::SetViewAndProjectionMatrix(glm::vec3 pos)
 	_view_and_projection.push_back(_projection * glm::lookAt(pos, pos + glm::vec3(0.0,0.0,-1.0), glm::vec3(0.0,-1.0,0.0)));
 }
 
+void Camera::HandleMovement(const glm::vec3& movement_direction)
+{
+	const float movement_speed = 0.2f;
+	_position += movement_direction * movement_speed;
+
+	// Update the View Matrix.
+	_view = glm::lookAt(_position, _direction, _up);
+}
+
 glm::mat4 Camera::GetViewMatrix() const
 {
 	return _view;

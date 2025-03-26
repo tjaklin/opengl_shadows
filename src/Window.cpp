@@ -3,6 +3,7 @@
 #include <cstdio>
 
 Window::Window(int width, int height, const char* title)
+    : _camera(nullptr)
 {
     if (glfwInit() != GLFW_TRUE)
     {
@@ -63,11 +64,50 @@ void Window::Update() const
 
     else if (glfwGetKey(_window, GLFW_KEY_1) == GLFW_PRESS)
         printf("[Key] Key 1 pressed.\n");
+
+    // Propagate the events to _camera object.
+    if (!_camera) return;
+    else if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        auto movement_direction = glm::vec3(0.0f, 1.0f, 0.0f);
+        _camera->HandleMovement(movement_direction);
+    }
+    else if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        auto movement_direction = glm::vec3(0.0f, -1.0f, 0.0f);
+        _camera->HandleMovement(movement_direction);
+    }
+    else if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        auto movement_direction = glm::vec3(-1.0f, 0.0f, 0.0f);
+        _camera->HandleMovement(movement_direction);
+    }
+    else if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        auto movement_direction = glm::vec3(1.0f, 0.0f, 0.0f);
+        _camera->HandleMovement(movement_direction);
+    }
+    else if (glfwGetKey(_window, GLFW_KEY_Q) == GLFW_PRESS)
+    {
+        auto movement_direction = glm::vec3(0.0f, 0.0f, 1.0f);
+        _camera->HandleMovement(movement_direction);
+    }
+    else if (glfwGetKey(_window, GLFW_KEY_E) == GLFW_PRESS)
+    {
+        auto movement_direction = glm::vec3(0.0f, 0.0f, -1.0f);
+        _camera->HandleMovement(movement_direction);
+    }
 }
 
 void Window::Draw() const
 {
     glfwSwapBuffers(_window);
+}
+
+void Window::SetCamera(Camera* camera)
+{
+    if (camera)
+        _camera = camera;
 }
 
 bool Window::ShouldClose() const
