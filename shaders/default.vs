@@ -16,4 +16,5 @@ void main()
 
     // Force starting color to be white.
     in_color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    in_color = vec4(normal, 1.0f);
 }

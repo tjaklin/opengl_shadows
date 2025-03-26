@@ -13,6 +13,8 @@
 #include "inc/VertexAttributeParser.hpp"
 #include "inc/DirectionalShadowMap.hpp"
 
+
+
 /*
     #include "inc/ShadowMap_omni.h"
     #include "inc/ShadowVolume.h"
@@ -43,11 +45,11 @@ int main(int argc, char** argv)
     // Ignore input data for now.
     (void) argc; (void) argv;
 
-    Window window(960, 540, "OpenGL Sjene");
+    Window window(1024, 1024, "OpenGL Sjene");
 
 	// Prepare the scene's camera object.
 	Camera eye;
-	glm::vec3 eyePosition = glm::vec3(-5.0f, 2.0f,-5.0f);
+	glm::vec3 eyePosition = glm::vec3(0.0f, 5.0f, 5.0f);
 	eye.SetViewMatrix(eyePosition, glm::vec3(-3.0f, 1.5f,-1.0f), glm::vec3(0,1,0));
 	eye.SetPerspectiveProjectionMatrix(45.0f, 4.0f/3.0f, 1.0f, 100.0f);
 	// Set this object as the scene's main camera object.
@@ -77,13 +79,6 @@ int main(int argc, char** argv)
 	kocka.SetTranslation(glm::vec3(-3.0f, 3.0f,-1.0f));
 	auto kockaModel = kocka.GetModelMatrix();
 
-	// Prepare a model for a cube that acts as the scene's light source.
-	Model izvor_svjetla;
-	izvor_svjetla.PushVertexAttribute(position, 0);
-	izvor_svjetla.PushVertexAttribute(normal, 1);
-	izvor_svjetla.SetTranslation(glm::vec3(-3.0f, 0.3f, 2.6f));
-	auto izvorModel = izvor_svjetla.GetModelMatrix();
-
 	// Prepare a 'ground' object, on which
 	//	the shadows cast by other models will be cast.
 	Model podloga;
@@ -108,13 +103,21 @@ int main(int argc, char** argv)
 	Shader shadowMapLight(vertexShadowMapLightFilepath, fragmentShadowMapLightFilepath);
 
 	// Set up the Directional Shadow Map object.
-	DirectionalShadowMap shadowMap(960, 540, 960, 540);
+	//DirectionalShadowMap shadowMap(960, 540, 960, 540);
+	DirectionalShadowMap shadowMap(1024, 1024, 1024, 1024);
 	shadowMap.LoadShaders(&shadowMapDepth, &shadowMapLight);
 	shadowMap.PrepareFBOandTexture();	// TODO: Ovo bi moglo biti prebacenu u neki cstr ?
 
 	// Use the default shader for now.
 	defaultShader.Bind();
 	auto shader = defaultShader.Get();
+
+	// Za potrebe debagiranja, postavljam kameru na polozaj svjetla !!
+	eye.SetViewMatrix(
+		glm::vec3(-3.0f, 20.0f, -1.0f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f)		// Up vector.
+	);
 
 	// Main update and draw loop.
     while (!window.ShouldClose())
@@ -142,10 +145,6 @@ int main(int argc, char** argv)
 			// Position and draw the object.
 			glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &kockaModel[0][0]);
 			kocka.Draw();
-
-			// Position and draw the object.
-			glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &izvorModel[0][0]);
-			izvor_svjetla.Draw();
 		}
 
 		// Test koristenja DirectionalShadowMap.
@@ -159,10 +158,10 @@ int main(int argc, char** argv)
 			Camera directional_camera;
 			directional_camera.SetOrthogonalProjectionMatrix(-10, 10,-20, 20,-10, 20);
 			directional_camera.SetViewMatrix(
-				glm::vec3(-4.0, 6.0f,-2.0f),
-				glm::vec3(-3.0f, 1.5f,-1.0f),
+				glm::vec3(-3.0, 20.0f, -1.0f),
+				glm::vec3(0.0f, 0.0f, 0.0f),
 				glm::vec3(0.0f, 1.0f, 0.0f)		// Up vector.
-				);
+			);
 
 			// Get ready for the First stage of drawing.
 			//	In this stage, the scene is drawn from the
@@ -190,10 +189,9 @@ int main(int argc, char** argv)
 
 			// Connect all the 'uniform' data to be sent to shaders.
 			shadowMap.SecondPassSetup();
-
-			shadowMap.SetViewMatrix(eyeView);
+			shadowMap.SetViewMatrix(eye.GetViewMatrix());
 			shadowMap.SetProjectionMatrix(eyeProjection);
-			shadowMap.SetLightDirection(glm::vec3(-4.0, 6.0f,-2.0f));
+			shadowMap.SetLightDirection(glm::vec3(-3.0, 20.0f,-1.0f));
 			shadowMap.SetBiasedLightMvpMatrix(lightBiasMVP);
 			shadowMap.SetIsPCF(false);
 			shadowMap.BindDepthTexture();
@@ -202,28 +200,14 @@ int main(int argc, char** argv)
 			shadowMap.SetModelMatrix(kockaModel);
 			kocka.Draw();
 
-			shadowMap.SetModelMatrix(izvorModel);
-			izvor_svjetla.Draw();
-
 			shadowMap.SetModelMatrix(podlogaModel);
 			lightBiasMVP = biasMVP * directional_camera.GetProjectionMatrix() * directional_camera.GetViewMatrix() * podlogaModel;
+			shadowMap.SetBiasedLightMvpMatrix(lightBiasMVP);
 			podloga.Draw();
 		}
 
 		// Display Window's framebuffer.
         window.Draw();
-
-		//SM_dir.secondPassSetup();	// Postavi Viewport, zeljeni Shader, napravi glClear().
-
-		//SM_dir.setModel( kocke[0].getModelMAT() ); // glUniformMatrix4fv(glGetUniformLocation(shader_lightingID, "model") ...
-		//SM_dir.setView ( eye.getView() ); // glUniformMatrix4fv(glGetUniformLocation(shader_lightingID, "view" ) ...
-		//SM_dir.setProj ( eye.getProj() ); // glUniformMatrix4fv(glGetUniformLocation(shader_lightingID, "projection") ...
-
-		//lightBiasMVP = biasMVP * lightMVP; // Neka magija
-
-		//SM_dir.setLightDir( dLight.position );	// glUniform3f( glGetUniformLocation(shader_lightingID, "lightDir") ...
-		//SM_dir.setBiasedLightMVP( lightBiasMVP ); // glUniformMatrix4fv(glGetUniformLocation(shader_lightingID, "lBiasMVP") ...
-		//SM_dir.setDepthTexture( 1 );	// ... Nikaj bitno za osnovno crtanje.
     }
 
     return 0;

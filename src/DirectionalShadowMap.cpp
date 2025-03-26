@@ -83,18 +83,19 @@ void DirectionalShadowMap::FirstPassSetup()
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	_depth->Bind();
 
-	glCullFace(GL_FRONT);
+	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
 }
 
 void DirectionalShadowMap::SecondPassSetup()
 {
-	glCullFace(GL_BACK);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glViewport(0, 0, _window_width, _window_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	_light->Bind();
+
+	glCullFace(GL_BACK);
 }
 
 void DirectionalShadowMap::SetModelMatrix(glm::mat4 m)
