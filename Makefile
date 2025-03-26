@@ -5,7 +5,8 @@ FLAGS_COMPILER =-std=c++11 -g -Wall -Wextra -pedantic -I./Vendor/
 FLAGS_LINKER =-lGL -lGLU -lGLEW -lglfw
 
 FILES_SOURCE =Application.cpp src/Window.cpp src/Camera.cpp \
-	src/VertexAttributeParser.cpp src/Model.cpp src/Shader.cpp
+	src/VertexAttributeParser.cpp src/Model.cpp src/Shader.cpp \
+	src/Scene.cpp src/DefaultScene.cpp
 
 #FILES_HEADER =???
 
@@ -15,11 +16,11 @@ $(BINARY): $(FILES_OBJECT)
 	mkdir -p bin/
 	$(COMPILER) $(FILES_OBJECT) $(FLAGS_LINKER) -o $(BINARY)
 
-obj/Application.o: Application.cpp inc/Window.hpp inc/Camera.hpp
+obj/Application.o: Application.cpp inc/Scene.hpp
 	mkdir -p obj/src/
 	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
 
-obj/src/Window.o: src/Window.cpp inc/Window.hpp
+obj/src/Window.o: src/Window.cpp inc/Window.hpp inc/Camera.hpp
 	mkdir -p obj/src/
 	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
 
@@ -31,11 +32,20 @@ obj/src/VertexAttributeParser.o: src/VertexAttributeParser.cpp inc/VertexAttribu
 	mkdir -p obj/src/
 	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
 
-obj/src/Model.o: src/Model.cpp inc/Model.hpp
+obj/src/Model.o: src/Model.cpp inc/Model.hpp inc/VertexAttributeParser.hpp
 	mkdir -p obj/src/
 	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
 
 obj/src/Shader.o: src/Shader.cpp inc/Shader.hpp
+	mkdir -p obj/src/
+	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
+
+obj/src/Scene.o: src/Scene.cpp inc/Scene.hpp inc/Window.hpp inc/Model.hpp \
+	inc/VertexAttributeParser.hpp inc/Shader.hpp
+	mkdir -p obj/src/
+	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
+
+obj/src/DefaultScene.o: src/DefaultScene.cpp inc/DefaultScene.hpp inc/Scene.hpp
 	mkdir -p obj/src/
 	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
 
