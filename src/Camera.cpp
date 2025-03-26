@@ -31,6 +31,7 @@ void Camera::SetOrthogonalProjectionMatrix(int left, int right, int bottom, int 
 	_projection = glm::ortho<float>(left, right, bottom, top, near, far);
 }
 
+// TODO: Cemu ovoooo sluzi?
 void Camera::SetViewAndProjectionMatrix(glm::vec3 pos)
 {
 	// TODO: Ovo sam samo preimenoval, ali nisam mijenjal logiku. Moram se tu kasnije

@@ -4,6 +4,7 @@ layout (location = 0) in vec3 position;
 
 uniform mat4 lMVP;
 
-void main(){
+void main()
+{
 	gl_Position = lMVP * vec4( position, 1.0f);
 }

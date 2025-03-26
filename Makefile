@@ -5,7 +5,7 @@ FLAGS_COMPILER =-std=c++11 -g -Wall -Wextra -pedantic -I./Vendor/
 FLAGS_LINKER =-lGL -lGLU -lGLEW -lglfw
 
 FILES_SOURCE =Application.cpp src/Window.cpp src/Camera.cpp \
-	src/VertexAttributeParser.cpp src/Model.cpp src/Shader.cpp
+	src/VertexAttributeParser.cpp src/Model.cpp src/Shader.cpp src/DirectionalShadowMap.cpp
 
 #FILES_HEADER =???
 
@@ -36,6 +36,10 @@ obj/src/Model.o: src/Model.cpp inc/Model.hpp
 	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
 
 obj/src/Shader.o: src/Shader.cpp inc/Shader.hpp
+	mkdir -p obj/src/
+	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
+
+obj/src/DirectionalShadowMap.o: src/DirectionalShadowMap.cpp inc/DirectionalShadowMap.hpp
 	mkdir -p obj/src/
 	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
 

@@ -1,7 +1,7 @@
 #version 330 core
 
-layout (location=0) in vec3 position;
-layout (location=1) in vec3 normal;
+layout (location = 0) in vec3 position;
+layout (location = 1) in vec3 normal;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -14,7 +14,6 @@ out vec4 light_position;
 
 void main()
 {
-
 	vec4 pos = vec4( position, 1.0f );
 	vec4 nor = vec4( normal , 0.0f );
 
