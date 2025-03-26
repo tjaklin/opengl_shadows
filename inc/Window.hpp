@@ -3,6 +3,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "Camera.hpp"
+
 class Window
 {
 public:
@@ -13,8 +15,10 @@ public:
     void Update() const;
     void Draw() const;
 
+    void SetCamera(Camera* camera);
     bool ShouldClose() const;
 
 private:
     GLFWwindow* _window;
+    Camera* _camera;    // The scene's main camera.
 };

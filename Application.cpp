@@ -50,7 +50,10 @@ int main(int argc, char** argv)
 	glm::vec3 eyePosition = glm::vec3(-5.0f, 2.0f,-5.0f);
 	eye.SetViewMatrix(eyePosition, glm::vec3(-3.0f, 1.5f,-1.0f), glm::vec3(0,1,0));
 	eye.SetPerspectiveProjectionMatrix(45.0f, 4.0f/3.0f, 1.0f, 100.0f);
-
+	// Set this object as the scene's main camera object.
+	// This enables it to handle movement input events.
+	window.SetCamera(&eye);
+	
 	// Prepare 3D shape data.
 	const char* cube_position_filepath = "vertices/cube_position.txt";
 	VertexAttribute position = VertexAttributeParser::ProcessFile(cube_position_filepath);
@@ -121,6 +124,10 @@ int main(int argc, char** argv)
 
 		auto eyeView = eye.GetViewMatrix();
 		auto eyeProjection = eye.GetProjectionMatrix();
+
+		// Forward View and Projection matrix data to the shader.
+		glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE, &eyeView[0][0]);
+		glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, &eyeProjection[0][0]);
 
 		if (false)	// Najobicnije crtanje koje radi ispravno. Komentirano za test.
 		{
