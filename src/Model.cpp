@@ -80,7 +80,7 @@ void Model::PushVertexAttribute(VertexAttribute& attribute, unsigned int locatio
 	_number_of_vertices = (GLuint) attribute.count / 3;	// Divide by 3 dimensions.
 }
 
-void Model::Draw(unsigned int attributes) const
+void Model::Draw() const
 {
 	// Currently, only a single Vertex Attribute is supported and that is Position.
 	glBindVertexArray(_vao);
@@ -94,36 +94,6 @@ void Model::Draw(unsigned int attributes) const
 	glDisableVertexAttribArray(1);
 
 	glBindVertexArray(0);
-
-	(void) attributes;
-	return; // Return right after drawing is done.
-
-	// TODO: Check and enable this later
-/*
-	switch(attributes)
-	{
-	case 3:
-		glEnableVertexAttribArray(2);
-		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-		glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), (void*) (6*sizeof(GLfloat)) );
-
-	default:
-	case 2:
-		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-		glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), (void*) (3*sizeof(GLfloat)) );
-
-	case 1:
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-		glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), (void*)0 );
-	};
-
-	glDrawArrays(GL_TRIANGLES, 0, _number_of_vertices );
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
-*/
 }
 
 void Model::RecalculateModelMatrix()
@@ -131,12 +101,12 @@ void Model::RecalculateModelMatrix()
 	_model = _translation * _rotation * _scale;
 }
 
-void Model::SetScale(float factor)
+void Model::SetScale(const glm::vec3& scaleVector)
 {
-	_scale = glm::scale(glm::mat4(1.0f), glm::vec3(factor));
+	_scale = glm::scale(glm::mat4(1.0f), scaleVector);
 	RecalculateModelMatrix();
-
 }
+
 void Model::SetRotation(glm::vec3 vector, float angle)
 {
 	_rotation = glm::rotate(angle, vector);	// Za ovo treba 'GLM EXPERIMENTAL'

@@ -10,9 +10,10 @@
 #include "inc/Window.hpp"
 #include "inc/Scene.hpp"
 #include "inc/DefaultScene.hpp"
+#include "inc/ShadowMapScene.hpp"
+#include "inc/DirectionalShadowMap.hpp"
 
 /*
-    #include "inc/ShadowMap_dir.h"
     #include "inc/ShadowMap_omni.h"
     #include "inc/ShadowVolume.h"
     #include "inc/ShadowMap_variance.h"
@@ -42,10 +43,18 @@ int main(int argc, char** argv)
     // Ignore input data for now.
     (void) argc; (void) argv;
 
-    Window window(640, 480, "OpenGL Sjene");
+    Window window(1024, 1024, "OpenGL Sjene");
 
-	DefaultScene default_scene(&window);
-	default_scene.Run();
+	if (false)
+	{
+		DefaultScene default_scene(&window);
+		default_scene.Run();
+	}
+	else
+	{
+		ShadowMapScene shadowmap_scene(&window);
+		shadowmap_scene.Run();
+	}
 
     return 0;
 }

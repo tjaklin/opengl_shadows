@@ -15,6 +15,9 @@ Window::Window(int width, int height, const char* title)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    // TODO: The positioning Hints don't work. Why ?
+    //glfwWindowHint(GLFW_POSITION_X, 0);
+    //glfwWindowHint(GLFW_POSITION_Y, 0);
 
     _window = glfwCreateWindow(width, height, title, nullptr, nullptr);
     if (!_window)
@@ -33,12 +36,16 @@ Window::Window(int width, int height, const char* title)
         return;
     }
 
+    // Set fixed position.
+    glfwSetWindowPos(_window, 960, 0);
+
     // Enable some capabilities.
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-    /*
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+    /*
+    glDepthFunc(GL_LESS);
+    glClearStencil(0);  // TODO: Why this.
     */
 }
 
