@@ -9,9 +9,10 @@ void DefaultScene::Run() const
 {
     // Prepare the scene's camera object.
 	Camera eye;
-	glm::vec3 eyePosition = glm::vec3(-5.0f, 2.0f,-5.0f);
-	eye.SetViewMatrix(eyePosition, glm::vec3( 3.0f, -2.7f, 3.0f), glm::vec3(0,1,0));
-	eye.SetPerspectiveProjectionMatrix(45.0f, 4.0f/3.0f, 1.0f, 100.0f);
+	glm::vec3 eyePosition = glm::vec3(-16.6f, 15.4f, 9.2f);
+	eye.SetViewMatrix(eyePosition, glm::vec3(0.0f), glm::vec3(0,1,0));
+	//eye.SetPerspectiveProjectionMatrix(45.0f, 4.0f/3.0f, 1.0f, 100.0f);
+    eye.SetOrthogonalProjectionMatrix(-10, 10, -20, 20, -10, 50);
 	
 	// Set this object as the scene's main camera object.
 	// This enables it to handle movement input events.
@@ -41,8 +42,8 @@ void DefaultScene::Run() const
 	Model kocka;
 	kocka.PushVertexAttribute(position, 0);
 	kocka.PushVertexAttribute(color, 1);
-	kocka.SetScale(glm::vec3(4.0f));
-	kocka.SetTranslation(glm::vec3(20.0f, -4.3f, 4.6f));
+	kocka.SetScale(glm::vec3(1.0f));
+	kocka.SetTranslation(glm::vec3(-3.0f, 3.0f,-1.0f));
 	auto kockaModel = kocka.GetModelMatrix();
 
 	// Prepare shader data.

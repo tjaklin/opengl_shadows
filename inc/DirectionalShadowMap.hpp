@@ -17,6 +17,7 @@ public:
 	void PrepareFBOandTexture();
 
 	void FirstPassSetup();
+	void DebugPassSetup(const Shader* debug);	// For the purpose of rendering the depth texture's contents.
 	void SecondPassSetup();
 
 	void SetModelMatrix(glm::mat4 m);
@@ -25,15 +26,6 @@ public:
 
 	void SetLightDirection(glm::vec3 direction);
 	void SetLightMvpMatrix(glm::mat4 mvp);
-
-	void SetBiasedLightMvpMatrix(glm::mat4 biased);
-
-	void SetIsPCF(bool isPCF);
-
-	void BindDepthTexture() const;
-	void UnbindDepthTexture() const;
-
-	GLuint GetTexture() const;
 
 private:
 	uint _shadow_width;

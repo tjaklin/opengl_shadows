@@ -9,7 +9,7 @@ void ShadowMapScene::Run() const
 {
     // Prepare the scene's main Camera object
 	Camera eye;
-	glm::vec3 eyePosition = glm::vec3(-3.0f, 20.0f, -1.0f);
+	glm::vec3 eyePosition = glm::vec3(-3.0f, 15.0f, -1.0f);
 	eye.SetViewMatrix(eyePosition, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0,1,0));
 	eye.SetPerspectiveProjectionMatrix(45.0f, 4.0f/3.0f, 1.0f, 100.0f);
 
@@ -17,8 +17,7 @@ void ShadowMapScene::Run() const
     Camera light;
     glm::vec3 lightPosition = glm::vec3(-16.6f, 15.4f, 9.2f);
     light.SetViewMatrix(lightPosition, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0,1,0));
-    int near_plane = -10, far_plane = 50;
-    light.SetOrthogonalProjectionMatrix(-10, 10, -20, 20, near_plane, far_plane);
+    light.SetOrthogonalProjectionMatrix(-10, 10, -20, 20, -10, 50);
 
 	// Set the scene's main camera object.
 	// This enables it to handle movement input events.
@@ -50,7 +49,7 @@ void ShadowMapScene::Run() const
         return;
     }
 
-    const char* rectangle_uv_filepath = "vertices/rectangle_position.txt";
+    const char* rectangle_uv_filepath = "vertices/rectangle_uv.txt";
     VertexAttribute rectangle_uv = VertexAttributeParser::ProcessFile(rectangle_uv_filepath);
     if (rectangle_uv.data.empty())
     {
@@ -101,10 +100,9 @@ void ShadowMapScene::Run() const
     Shader debugShader(vertexDebugFilepath, fragmentDebugFilepath);
 
 	// Set up the Directional Shadow Map object.
-	//DirectionalShadowMap shadowMap(960, 540, 960, 540);
 	DirectionalShadowMap shadowMap(1024, 1024, 1024, 1024);
 	shadowMap.LoadShaders(&shadowMapDepth, &shadowMapLight);
-	shadowMap.PrepareFBOandTexture();	// TODO: Ovo bi moglo biti prebacenu u neki cstr ?
+	shadowMap.PrepareFBOandTexture();
 
 	// Main update and draw loop.
     while (!_window->ShouldClose())
@@ -120,65 +118,58 @@ void ShadowMapScene::Run() const
         //	to cast shadows.			
         shadowMap.FirstPassSetup();
         // Set the shader uniform data for the First drawing stage.
-        auto light_mvp_matrix = light.GetProjectionMatrix() * light.GetViewMatrix() * kockaModel;
-        shadowMap.SetLightMvpMatrix(light_mvp_matrix);
-        // Draw all objects that need to cast shadows.
+        //  Then draw the scene's object.
+        auto light_vp_matrix = light.GetProjectionMatrix() * light.GetViewMatrix();
+        shadowMap.SetLightMvpMatrix(light_vp_matrix * kockaModel);
         kocka.Draw();
+
+        shadowMap.SetLightMvpMatrix(light_vp_matrix * podlogaModel);
+        podloga.Draw();
 
         bool debug_pass = false;
         // Render the depth_texture to a 2D rectangle.
         if (debug_pass)
         {
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glViewport(0, 0, 1024, 1024);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, shadowMap.GetTexture());
-
-            debugShader.Bind();
-            auto shader = debugShader.Get();
-            glUniform1i(glGetUniformLocation(shader, "depthMap"), 0);
-            glUniform1f(glGetUniformLocation(shader, "near_plane"), near_plane);
-            glUniform1f(glGetUniformLocation(shader, "far_plane"), far_plane);
-            
+            shadowMap.DebugPassSetup(&debugShader);
             canvas.Draw();
         }
-
-        if (!debug_pass)
+        else
         {
-            auto eyeV = eye.GetViewMatrix();
-            auto eyeP = eye.GetProjectionMatrix();
-
             // Second stage. Draw the scene normally.
             // Connect all the 'uniform' data to be sent to shaders.
             shadowMap.SecondPassSetup();
-            shadowMap.SetViewMatrix(eyeV);
-            shadowMap.SetProjectionMatrix(eyeP);
-            shadowMap.SetLightDirection(lightPosition);
-            shadowMap.SetIsPCF(false);
-            shadowMap.BindDepthTexture();
+            shadowMap.SetViewMatrix(eye.GetViewMatrix());
+            shadowMap.SetProjectionMatrix(eye.GetProjectionMatrix());
+            shadowMap.SetLightDirection(lightPosition); // fragment shader only
             
-            glm::mat4 biasMVP = glm::mat4(
-                0.5, 0.0, 0.0, 0.0,
-                0.0, 0.5, 0.0, 0.0,
-                0.0, 0.0, 0.5, 0.0,
-                0.5, 0.5, 0.5, 1.0
-            );
-            glm::mat4 lightBiasMVP = biasMVP * light.GetProjectionMatrix() * light.GetViewMatrix();
+            // TODO: There is a variation of the ShadowMapping technique implementation
+            //  which makes use of a 'biasMatrix' to further transform the
+            //  'lightVP' (or 'lightBiasVP') that get's sent to the shader for
+            //  calculation of fragment's z value from the light's perspective.
+            //  Read up on the benefits of using said variation and consider
+            //  implementing it.
+            /*
+                Example 'biasMatrix'.
+                glm::mat4 biasMatrix = glm::mat4(
+                    0.5, 0.0, 0.0, 0.0,
+                    0.0, 0.5, 0.0, 0.0,
+                    0.0, 0.0, 0.5, 0.0,
+                    0.5, 0.5, 0.5, 1.0
+                );
+            */
+            glm::mat4 light_vp_matrix = light.GetProjectionMatrix() * light.GetViewMatrix();
 
             // Set data and draw the 'kocka' model.
-            auto kockaLightBiasMVP = lightBiasMVP * kockaModel;
             shadowMap.SetModelMatrix(kockaModel);
-            shadowMap.SetBiasedLightMvpMatrix(kockaLightBiasMVP);
+            shadowMap.SetLightMvpMatrix(light_vp_matrix * kockaModel);
             kocka.Draw();
 
             // Set data and draw the 'podloga' model.
-            auto podlogaLightBiasMVP = lightBiasMVP * podlogaModel;
             shadowMap.SetModelMatrix(podlogaModel);
-            shadowMap.SetBiasedLightMvpMatrix(podlogaLightBiasMVP);
+            shadowMap.SetLightMvpMatrix(light_vp_matrix * podlogaModel);
             podloga.Draw();
         }
-
+        
         _window->Draw();
     }
 

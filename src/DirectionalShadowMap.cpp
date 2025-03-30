@@ -29,8 +29,9 @@ void DirectionalShadowMap::PrepareFBOandTexture()
 	//	smaller value (eg. width that's equal to window_width of 960) ?
 	// In this call, i pass NULL to the 'data' argument, because
 	//	i mean to use the texture for output, instead of input.
-	// Play around with 'internalFormat' argument's precision (24, 32, 16, ...)
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, _shadow_width, _shadow_height,
+	//	NOTE: What are the benefits of using bigger 'internalFormat'
+	//	precision (16, 24, 32) ?
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, _shadow_width, _shadow_height,
 		0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 	
 	// Set the values of the default sampler, that's embedded into the
@@ -41,16 +42,15 @@ void DirectionalShadowMap::PrepareFBOandTexture()
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
+	
 	// TODO: Figure out what 'GL_TEXTURE_COMPARE_*' parameters mean.
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+	//	These commented configurations prevented me from getting a meaningful
+	//	depth texture ... Why were they even here in the first place ?
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
 
-	// NOTE: Mozda je moguce da mozda i ne moram koristiti zaseban Framebuffer
-	//	objekt da bi postigel crtanje 'dubine' u teksturu. Ali moozda, trebala
-	//	bi se ova hrabra tvrdnja provjeriti uz pomoc knjige ("Writing to Textures").
 	glBindFramebuffer(GL_FRAMEBUFFER, _fbo);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _depth_texture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _depth_texture, 0);
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
@@ -80,7 +80,29 @@ void DirectionalShadowMap::FirstPassSetup()
 	glBindFramebuffer(GL_FRAMEBUFFER, _fbo);
 	glViewport(0, 0, _shadow_width, _shadow_height);
 	glClear(GL_DEPTH_BUFFER_BIT);
+	// When rendering into a depthmap, we want to draw only
+	//	the back faces of objects. By doing this, we ensure
+	//	that, once the scene is drawn in the second step,
+	//	the objects' back face remains lit and not in shadow.
+	//	If we don't cull the front face, the objects' back
+	//	face will be considered in shadow during the second
+	//	step.
+	glCullFace(GL_FRONT);
 	_depth->Bind();
+}
+
+void DirectionalShadowMap::DebugPassSetup(const Shader* debug)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, _window_width, _window_height);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glCullFace(GL_BACK);
+
+	debug->Bind();
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, _depth_texture);
+	glUniform1i(glGetUniformLocation(debug->Get(), "depthMap"), 0);
 }
 
 void DirectionalShadowMap::SecondPassSetup()
@@ -88,7 +110,17 @@ void DirectionalShadowMap::SecondPassSetup()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, _window_width, _window_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// Restore culling of the back faces, for the
+	//	second rendering pass.
+	glCullFace(GL_BACK);
+
 	_light->Bind();
+
+	glActiveTexture(GL_TEXTURE0);
+   	glBindTexture(GL_TEXTURE_2D, _depth_texture);
+	// The line below cannot be commented out, because i added
+	//	'layout (binding=0)' to shader code AND because i use GLSL below v430.
+	glUniform1i(glGetUniformLocation(_light->Get(), "shadowMap"), 0);
 }
 
 void DirectionalShadowMap::SetModelMatrix(glm::mat4 m)
@@ -113,35 +145,6 @@ void DirectionalShadowMap::SetLightDirection(glm::vec3 direction)
 
 void DirectionalShadowMap::SetLightMvpMatrix(glm::mat4 mvp)
 {
-   glUniformMatrix4fv(glGetUniformLocation(_depth->Get(), "lMVP"), 1, GL_FALSE, &mvp[0][0]);
-}
-
-void DirectionalShadowMap::SetBiasedLightMvpMatrix(glm::mat4 biased)
-{
-   glUniformMatrix4fv(glGetUniformLocation(_light->Get(), "lBiasMVP"), 1, GL_FALSE, &biased[0][0]);
-}
-
-void DirectionalShadowMap::SetIsPCF(bool isPCF)
-{
-   glUniform1i(glGetUniformLocation(_light->Get(), "isPCF"), (int)isPCF);
-}
-
-void DirectionalShadowMap::BindDepthTexture() const
-{
-   glActiveTexture(GL_TEXTURE0);
-   glBindTexture(GL_TEXTURE_2D, _depth_texture);
-   // The line below cannot be commented out, because i added
-   //	'layout (binding=0)' to shader code AND because i use GLSL below v430.
-   glUniform1i(glGetUniformLocation(_light->Get(), "shadowMap"), 0);
-}
-
-// TODO: Not used.
-void DirectionalShadowMap::UnbindDepthTexture() const
-{
-   glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-GLuint DirectionalShadowMap::GetTexture() const
-{
-	return _depth_texture;
+   glUniformMatrix4fv(glGetUniformLocation(_depth->Get(), "lightMVP"), 1, GL_FALSE, &mvp[0][0]);
+   glUniformMatrix4fv(glGetUniformLocation(_light->Get(), "lightMVP"), 1, GL_FALSE, &mvp[0][0]);
 }
