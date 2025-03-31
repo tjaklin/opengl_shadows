@@ -15,23 +15,20 @@ Window::Window(int width, int height, const char* title)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    // TODO: The positioning Hints don't work. Why ?
-    //glfwWindowHint(GLFW_POSITION_X, 0);
-    //glfwWindowHint(GLFW_POSITION_Y, 0);
 
     _window = glfwCreateWindow(width, height, title, nullptr, nullptr);
     if (!_window)
     {
-        // TODO: Shutdown.
         glfwTerminate();
         return;
     }
 
+    // Create a GLFW context.
     glfwMakeContextCurrent(_window);
 
+    // Initialize GLEW for OpenGL function pointers.
     if (glewInit() != GLEW_OK)
     {
-        // TODO: Shutdown.
         glfwTerminate();
         return;
     }
@@ -39,14 +36,11 @@ Window::Window(int width, int height, const char* title)
     // Set fixed position.
     glfwSetWindowPos(_window, 960, 0);
 
-    // Enable some capabilities.
+    // Set OpenGL's state.
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    /*
-    glDepthFunc(GL_LESS);
-    glClearStencil(0);  // TODO: Why this.
-    */
+    glClearColor(0.2f, 1.0f, 1.0f, 1.0f);
 }
 
 Window::~Window()
@@ -57,7 +51,6 @@ Window::~Window()
 
 void Window::Clear() const
 {
-    glClearColor(0.2f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -68,9 +61,6 @@ void Window::Update() const
     // Temporary Input query mechanism.
     if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(_window, GLFW_TRUE);
-
-    else if (glfwGetKey(_window, GLFW_KEY_1) == GLFW_PRESS)
-        printf("[Key] Key 1 pressed.\n");
 
     // Propagate the events to _camera object.
     if (!_camera) return;
@@ -111,6 +101,13 @@ void Window::Draw() const
     glfwSwapBuffers(_window);
 }
 
+// Set a pointer to Camera object, which will be recognised
+//  as the main camera for whatever 'Scene' that's currently
+//  displayed on the window screen.
+// Having this pointer set enables the manipulation of
+//  main camera's position in the 'Scene' space by providing
+//  certain keyboard input.
+//  See definition of the 'Window::Update()' method.
 void Window::SetCamera(Camera* camera)
 {
     if (camera)

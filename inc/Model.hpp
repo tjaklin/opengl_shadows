@@ -12,9 +12,6 @@
 class Model
 {
 public:
-	// NOTE: Currently, only two Vertex Attributes are supported.
-	//	It will soon be necessary to refactor the class to
-	//	enable support for variable amount of Vert*Attributes.
 	Model();
 	~Model();
 
@@ -42,4 +39,6 @@ private:
 	glm::mat4 _rotation = glm::mat4(1.0f);
 	glm::mat4 _translation = glm::mat4(1.0f);
 	glm::mat4 _model = glm::mat4(1.0f);
+
+	std::vector<VertexAttributeLayout> _attribute_layouts;
 };

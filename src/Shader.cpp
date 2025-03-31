@@ -42,10 +42,9 @@ GLuint Shader::Get() const
 
 GLuint Shader::ParseAndCompile(ShaderType type, std::ifstream& source_file)
 {
-    // TODO: Probaj ovo sa ISTREAM_ITERATORima napravit ko u knjigi !!
+    // TODO: Probaj ovo sa 'istream_iterator' rjesit, ko u knjigi!
     if (!source_file.is_open())
     {
-        // TODO: Maybe print something out.
         return 255; // This is code for "Invalid Shader handle".
     }
 
@@ -56,7 +55,7 @@ GLuint Shader::ParseAndCompile(ShaderType type, std::ifstream& source_file)
     {
         shader_stream << source_line << '\n';
     }
-    // TODO: Change to something nicer.
+
     auto source_str = shader_stream.str();
     auto source_c = source_str.c_str();
     auto source_length = strlen(source_c);
@@ -78,7 +77,6 @@ GLuint Shader::ParseAndCompile(ShaderType type, std::ifstream& source_file)
         printf("[Shader] Compilation error detected. Info:\n%s", shader_info);
 
         glDeleteShader(shader);
-        // TODO: Change to something nicer.
         return 255; // This is code for "Invalid Shader handle".
     }
 

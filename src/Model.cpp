@@ -9,90 +9,97 @@ Model::Model()
 
 Model::~Model()
 {
-	glDeleteVertexArrays(1, &_vao);
-	_vao = 255;	// 255 means invalid value.
-
-	// If _vbo hodls a valid buffer in OpenGL land, delete it!
+	// If _vbo holds a valid buffer in OpenGL land, delete it!
 	if (_vbo != 255)
 	{
+		// Unbind buffer set to 'GL_ARRAY_BUFFER' target, in
+		//	case it's the '_vbo'.
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glDeleteBuffers(1, &_vbo);
 		_vbo = 255; // 255 means invalid value.
 	}
+
+	glBindVertexArray(0);
+	glDeleteVertexArrays(1, &_vao);
+	_vao = 255;	// 255 means invalid value.
 }
 
 void Model::PushVertexAttribute(VertexAttribute& attribute, unsigned int location)
 {
-	// TODO: This method could still use some cleaning up !
-
-	// If _vbo already holds a buffer in OpenGL, make sure to
-	//	copy it's data to the new buffer that we're about to
-	//	create.
-	if (_vbo == 255)
+	GLint current_size = 0;
+	if (_vbo != 255)
 	{
-		GLuint new_vbo = 255;
-		glGenBuffers(1, &new_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, new_vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * attribute.count,
-			attribute.data.data(), GL_STATIC_DRAW);
-
-		glBindVertexArray(_vao);
-		glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (const void*) 0);// Position only.
-		_vbo = new_vbo;
-	}
-	else
-	{
-		// TODO: What will 'current_size' be if _vbo is '255' ?
-		GLint current_size = 0;
-		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-		glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &current_size);
-
-		GLint new_size = current_size + (sizeof(float) * attribute.count);
-		GLuint new_vbo;
-		glGenBuffers(1, &new_vbo);
-		glBindBuffer(GL_COPY_WRITE_BUFFER, new_vbo);
-		glBufferData(GL_COPY_WRITE_BUFFER, new_size, nullptr, GL_STATIC_DRAW);
 		glBindBuffer(GL_COPY_READ_BUFFER, _vbo);
+		glGetBufferParameteriv(GL_COPY_READ_BUFFER, GL_BUFFER_SIZE, &current_size);
+	}
+
+	unsigned int attribute_data_size = sizeof(float) * attribute.count;
+	GLint new_size = current_size + attribute_data_size;
+
+	GLuint new_vbo;
+	glGenBuffers(1, &new_vbo);
+	glBindBuffer(GL_COPY_WRITE_BUFFER, new_vbo);
+	glBufferData(GL_COPY_WRITE_BUFFER, new_size, nullptr, GL_STATIC_DRAW);
+
+	// If there's no data to copy from '_vbo' (bound to 'GL_COPY_READ_BUFFER',
+	//	skip the copying process. Otherwise, copy everything from '_vbo' into
+	//	the new buffer object.
+	if (current_size != 0)
+	{
 		glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, current_size);
-		glBufferSubData(GL_COPY_WRITE_BUFFER, current_size,
-			sizeof(float) * attribute.count, attribute.data.data());
+	}
 
-		// Unbind the Read and Write targets.
-		glBindBuffer(GL_COPY_READ_BUFFER, 0);
-		glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
-		// Delete the old one and keep the new vbo handle.
+	glBufferSubData(GL_COPY_WRITE_BUFFER, current_size, attribute_data_size,
+		attribute.data.data());
+
+	// Unbind the Read and Write targets.
+	glBindBuffer(GL_COPY_READ_BUFFER, 0);
+	glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
+
+	// Delete the old '_vbo' object handle,
+	//	if it was in use.
+	if (_vbo != 255)
+	{
 		glDeleteBuffers(1, &_vbo);
-		_vbo = new_vbo;
+	}
+	_vbo = new_vbo;
 
-		// Bind the Array target and VAO.
-		glBindVertexArray(_vao);
-		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-		// TODO: Correctly set up the VertexAttribute pointers.
-		//	Currently it works only because i know what VAttributes i want to use
-		//	look like . . . Make it better later !
-		(void) location;	// Use this instead, once the time comes.
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (const void*) 0);			// Position
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (const void*) current_size);	// Color
+	// Bind the Array target and VAO.
+	glBindVertexArray(_vao);
+	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+
+	// Save the 'attribute' object's configuration
+	//	data into a new VertexAttributeLayout object.
+	_attribute_layouts.push_back(
+	{
+		attribute,
+		location,
+		(unsigned int) sizeof(float) * attribute.dimension,
+		(unsigned int) current_size
+	});
+
+	// Set up all the VertexAttribPointers necessary.
+	for (auto& layout : _attribute_layouts)
+	{
+		uint index = layout.location;
+		uint size = layout.attribute.dimension;
+		uint stride = layout.stride;
+		uint offset = layout.offset;
+
+		glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (const void*) offset);
+		glEnableVertexAttribArray(index);
 	}
 
 	// Unbind VAO after setting all the data.
 	glBindVertexArray(0);
 
-	_number_of_vertices = (GLuint) attribute.count / 3;	// Divide by 3 dimensions.
+	_number_of_vertices = (GLuint) attribute.count / attribute.dimension;
 }
 
 void Model::Draw() const
 {
-	// Currently, only a single Vertex Attribute is supported and that is Position.
 	glBindVertexArray(_vao);
-
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-
 	glDrawArrays(GL_TRIANGLES, 0, _number_of_vertices);
-
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-
 	glBindVertexArray(0);
 }
 

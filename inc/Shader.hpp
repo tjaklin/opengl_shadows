@@ -8,7 +8,8 @@ enum ShaderType { NONE = 0, VERTEX = GL_VERTEX_SHADER, FRAGMENT = GL_FRAGMENT_SH
 class Shader
 {
 public:
-    // Currently, only Vertex and Fragment shaders are supported.
+    // NOTE: Currently, only Vertex and Fragment shaders are supported.
+    //  Geometry shader will be added in the future.
     Shader(const char* vertex_filepath, const char* fragment_filepath);
     ~Shader();
 

@@ -81,9 +81,6 @@ void ShadowMapScene::Run() const
     Model canvas;
     canvas.PushVertexAttribute(rectangle_position, 0);
     canvas.PushVertexAttribute(rectangle_uv, 1);
-    canvas.SetScale(glm::vec3(1.0f));
-    canvas.SetTranslation(glm::vec3(1.0f));
-    auto canvasModel = canvas.GetModelMatrix();
 
 	// Prepare Directional Shadow Map shader data.
 	const char* vertexShadowMapDepthFilepath = "shaders/shadow_map/directional/sm_depth.vs";

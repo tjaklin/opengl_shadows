@@ -20,5 +20,5 @@ public:
 
 private:
     GLFWwindow* _window;
-    Camera* _camera;    // The scene's main camera.
+    Camera* _camera;
 };

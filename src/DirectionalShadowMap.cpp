@@ -22,6 +22,7 @@ void DirectionalShadowMap::PrepareFBOandTexture()
 	glGenFramebuffers(1, &_fbo);
 	glGenTextures(1, &_depth_texture);
 
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, _depth_texture);
 	
 	// NOTE: Documentation states that 'width' and 'height' values that
@@ -43,7 +44,7 @@ void DirectionalShadowMap::PrepareFBOandTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	
-	// TODO: Figure out what 'GL_TEXTURE_COMPARE_*' parameters mean.
+	// NOTE: Figure out what 'GL_TEXTURE_COMPARE_*' parameters mean.
 	//	These commented configurations prevented me from getting a meaningful
 	//	depth texture ... Why were they even here in the first place ?
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
@@ -70,7 +71,7 @@ void DirectionalShadowMap::PrepareFBOandTexture()
 
 void DirectionalShadowMap::LoadShaders(const Shader* depth, const Shader* light)
 {
-	// TODO: Add some error checking for arguments, if necessary.
+	// NOTE: Add some error checking for arguments, if necessary.
 	_depth = depth;
 	_light = light;
 }
