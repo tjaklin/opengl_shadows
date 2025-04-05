@@ -1,11 +1,11 @@
-#include "../inc/ShadowMapScene.hpp"
+#include "../inc/DirectionalShadowMapScene.hpp"
 
-ShadowMapScene::ShadowMapScene(Window* window)
+DirectionalShadowMapScene::DirectionalShadowMapScene(Window* window)
     : Scene(window)
 {
 }
 
-void ShadowMapScene::Run() const
+void DirectionalShadowMapScene::Run() const
 {
     // Prepare the scene's main Camera object
 	Camera eye;

@@ -28,13 +28,11 @@ public:
 	void SetLightMvpMatrix(glm::mat4 mvp);
 
 private:
-	uint _shadow_width;
-	uint _shadow_height;
-	uint _window_width;
-	uint _window_height;
+	uint _shadow_width, _shadow_height;
+	uint _window_width, _window_height;
 
-	GLuint _fbo;
-	GLuint _depth_texture;
+	GLuint _fbo = 255;	// '255' means invalid value.
+	GLuint _depth_texture = 255;	// '255' means invalid value.
 
 	const Shader* _depth = nullptr;
 	const Shader* _light = nullptr;

@@ -6,8 +6,9 @@ FLAGS_LINKER =-lGL -lGLU -lGLEW -lglfw
 
 FILES_SOURCE =Application.cpp src/Window.cpp src/Camera.cpp \
 	src/VertexAttributeParser.cpp src/Model.cpp src/Shader.cpp \
-	src/Scene.cpp src/DefaultScene.cpp src/ShadowMapScene.cpp \
-	src/DirectionalShadowMap.cpp
+	src/Scene.cpp src/DefaultScene.cpp src/DirectionalShadowMapScene.cpp \
+	src/DirectionalShadowMap.cpp src/OmnidirectionalShadowMapScene.cpp \
+	src/OmnidirectionalShadowMap.cpp
 
 #FILES_HEADER =???
 
@@ -50,11 +51,20 @@ obj/src/DefaultScene.o: src/DefaultScene.cpp inc/DefaultScene.hpp inc/Scene.hpp
 	mkdir -p obj/src/
 	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
 
-obj/src/ShadowMapScene.o: src/ShadowMapScene.cpp inc/ShadowMapScene.hpp inc/Scene.hpp
+obj/src/DirectionalShadowMapScene.o: src/DirectionalShadowMapScene.cpp inc/DirectionalShadowMapScene.hpp inc/Scene.hpp
 	mkdir -p obj/src/
 	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
 
 obj/src/DirectionalShadowMap.o: src/DirectionalShadowMap.cpp inc/DirectionalShadowMap.hpp
+	mkdir -p obj/src/
+	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
+
+## This lower line might not be true. Looks like dependencies of 'OmnidirectionalShadowMap' is missing.
+obj/src/OmnidirectionalShadowMapScene.o: src/OmnidirectionalShadowMapScene.cpp inc/OmnidirectionalShadowMapScene.hpp inc/Scene.hpp
+	mkdir -p obj/src/
+	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
+
+obj/src/OmnidirectionalShadowMap.o: src/OmnidirectionalShadowMap.cpp inc/OmnidirectionalShadowMap.hpp
 	mkdir -p obj/src/
 	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
 
