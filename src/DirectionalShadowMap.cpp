@@ -4,17 +4,26 @@
 
 DirectionalShadowMap::DirectionalShadowMap(uint shadow_w, uint shadow_h, uint window_w,
 	uint window_h)
-	: _shadow_width(shadow_w), _shadow_height(shadow_h), _window_width(window_w),
-		_window_height(window_h), _fbo(255), _depth_texture(255)
+	: _shadow_width(shadow_w), _shadow_height(shadow_h)
+	, _window_width(window_w), _window_height(window_h)
 {
 }
 
 DirectionalShadowMap::~DirectionalShadowMap()
 {
-	glDeleteFramebuffers(1, &_fbo);
-	_fbo = 255; // 255 means invalid value.
-	glDeleteTextures(1, &_depth_texture);
-	_depth_texture = 255; // 255 means invalid value.
+	// If '_depth_texture' was ever valid and / or used
+	if (_depth_texture != 255)
+	{
+		glDeleteTextures(1, &_depth_texture);
+		_depth_texture = 255;
+	}
+
+	// If '_fbo' was ever valid and / or used
+	if (_fbo != 255)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDeleteFramebuffers(1, &_fbo);
+	}
 }
 
 void DirectionalShadowMap::PrepareFBOandTexture()
