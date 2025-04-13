@@ -9,13 +9,13 @@ void DirectionalShadowMapScene::Run() const
 {
     // Prepare the scene's main Camera object
 	Camera eye;
-	glm::vec3 eyePosition = glm::vec3(-3.0f, 15.0f, -1.0f);
+	glm::vec3 eyePosition = glm::vec3(0.0f, 5.0f, 20.0f);
 	eye.SetViewMatrix(eyePosition, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0,1,0));
 	eye.SetPerspectiveProjectionMatrix(45.0f, 4.0f/3.0f, 1.0f, 100.0f);
 
     // Set the scene's directional light source Camera object.
     Camera light;
-    glm::vec3 lightPosition = glm::vec3(-16.6f, 15.4f, 9.2f);
+    glm::vec3 lightPosition = glm::vec3(10.0f, 15.0f, 10.0f);
     light.SetViewMatrix(lightPosition, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0,1,0));
     light.SetOrthogonalProjectionMatrix(-10, 10, -20, 20, -10, 50);
 
@@ -59,12 +59,17 @@ void DirectionalShadowMapScene::Run() const
 
 	// Prepare 'Model' data. That's about all the necessary data that's needed
 	//	for a shape to get drawn on screen.
-	Model kocka;
-	kocka.PushVertexAttribute(position, 0);
-	kocka.PushVertexAttribute(normal, 1);
-	kocka.SetScale(glm::vec3(1.0f));
-	kocka.SetTranslation(glm::vec3(-3.0f, 3.0f,-1.0f));
-	auto kockaModel = kocka.GetModelMatrix();
+	Model kocka1;
+	kocka1.PushVertexAttribute(position, 0);
+	kocka1.PushVertexAttribute(normal, 1);
+    auto kocka1Model = kocka1.GetModelMatrix();
+    // Don't perform any Model matrix manipulation for 'kocka1' yet.
+
+    Model kocka2;
+    kocka2.PushVertexAttribute(position, 0);
+    kocka2.PushVertexAttribute(normal, 1);
+    kocka2.SetTranslation(glm::vec3(-7.0f, -2.0f, 5.0f));
+    auto kocka2Model = kocka2.GetModelMatrix();
 
 	// Prepare a 'ground' object, on which
 	//	the shadows cast by other models will be cast.
@@ -72,7 +77,7 @@ void DirectionalShadowMapScene::Run() const
 	podloga.PushVertexAttribute(position, 0);
 	podloga.PushVertexAttribute(normal, 1);
 	podloga.SetScale(glm::vec3(15.0f, 1.0f, 15.0f));
-	podloga.SetTranslation(glm::vec3(0.0f, 0.0f, 0.0f));
+	podloga.SetTranslation(glm::vec3(0.0f, -5.0f, 0.0f));
 	auto podlogaModel = podloga.GetModelMatrix();
 
     // Prepare a 'canvas' object, which is a simple 2D rectangle that will
@@ -83,12 +88,12 @@ void DirectionalShadowMapScene::Run() const
     canvas.PushVertexAttribute(rectangle_uv, 1);
 
 	// Prepare Directional Shadow Map shader data.
-	const char* vertexShadowMapDepthFilepath = "shaders/shadow_map/directional/sm_depth.vs";
-	const char* fragmentShadowMapDepthFilepath = "shaders/shadow_map/directional/sm_depth.fs";
+	const char* vertexShadowMapDepthFilepath = "shaders/shadow_map/directional/depth.vs";
+	const char* fragmentShadowMapDepthFilepath = "shaders/shadow_map/directional/depth.fs";
 	Shader shadowMapDepth(vertexShadowMapDepthFilepath, fragmentShadowMapDepthFilepath);
 
-	const char* vertexShadowMapLightFilepath = "shaders/shadow_map/directional/sm_light.vs";
-	const char* fragmentShadowMapLightFilepath = "shaders/shadow_map/directional/sm_light.fs";
+	const char* vertexShadowMapLightFilepath = "shaders/shadow_map/directional/light.vs";
+	const char* fragmentShadowMapLightFilepath = "shaders/shadow_map/directional/light.fs";
 	Shader shadowMapLight(vertexShadowMapLightFilepath, fragmentShadowMapLightFilepath);
 
     // Prepare default shader for 2D rectangle debugging.
@@ -117,8 +122,11 @@ void DirectionalShadowMapScene::Run() const
         // Set the shader uniform data for the First drawing stage.
         //  Then draw the scene's object.
         auto light_vp_matrix = light.GetProjectionMatrix() * light.GetViewMatrix();
-        shadowMap.SetLightMvpMatrix(light_vp_matrix * kockaModel);
-        kocka.Draw();
+        shadowMap.SetLightMvpMatrix(light_vp_matrix * kocka1Model);
+        kocka1.Draw();
+
+        shadowMap.SetLightMvpMatrix(light_vp_matrix * kocka2Model);
+        kocka2.Draw();
 
         shadowMap.SetLightMvpMatrix(light_vp_matrix * podlogaModel);
         podloga.Draw();
@@ -156,12 +164,15 @@ void DirectionalShadowMapScene::Run() const
             */
             glm::mat4 light_vp_matrix = light.GetProjectionMatrix() * light.GetViewMatrix();
 
-            // Set data and draw the 'kocka' model.
-            shadowMap.SetModelMatrix(kockaModel);
-            shadowMap.SetLightMvpMatrix(light_vp_matrix * kockaModel);
-            kocka.Draw();
+            // Set data and draw the scene's objects.
+            shadowMap.SetModelMatrix(kocka1Model);
+            shadowMap.SetLightMvpMatrix(light_vp_matrix * kocka1Model);
+            kocka1.Draw();
 
-            // Set data and draw the 'podloga' model.
+            shadowMap.SetModelMatrix(kocka2Model);
+            shadowMap.SetLightMvpMatrix(light_vp_matrix * kocka2Model);
+            kocka2.Draw();
+
             shadowMap.SetModelMatrix(podlogaModel);
             shadowMap.SetLightMvpMatrix(light_vp_matrix * podlogaModel);
             podloga.Draw();

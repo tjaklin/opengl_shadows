@@ -12,24 +12,22 @@ public:
 	~OmnidirectionalShadowMap();
 
 	void FirstPassSetup();
-//	void DebugPassSetup();		Add later !
+	//void DebugPassSetup();	// TODO: Add later !
 	void SecondPassSetup();
 
-	void setModelFP(glm::mat4 Model);
-	void setFarPlaneFP(float far);
-	void setModelSP(glm::mat4 Model);
-	void setFarPlaneSP(float far);
+	void SetModelMatrix_Depth(glm::mat4 Model);
+	void SetModelMatrix_Light(glm::mat4 Model);
+	void SetViewMatrix(glm::mat4 View);
+	void SetProjectionMatrix(glm::mat4 Proj);
 
-	void setView(glm::mat4 View);
-	void setProj(glm::mat4 Proj);
+	void SetLightPosition_Depth(glm::vec3 lightPos);
+	void SetLightPosition_Light(glm::vec3 lightPos);
 
-	void setLightPos(glm::vec3 lightPos);
-	void setPointLight(glm::vec3 pos, glm::vec3 ambient, glm::vec3 diffuse);
+	void SetFarPlane_Depth(float far);
+	void SetFarPlane_Light(float far);
 
-	void setReverseNor(bool areReversed);
-
-	void setDepthTexture(uint offset = 1);
-	void setShadowMatrices(std::vector<glm::mat4> shadowMatrices);
+	void SetDepthTexture();
+	void SetShadowMatrices(std::vector<glm::mat4> shadowMatrices);
 
 public:
 	void PrepareFBOandTexture();

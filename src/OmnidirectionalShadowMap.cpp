@@ -76,29 +76,6 @@ void OmnidirectionalShadowMap::FirstPassSetup()
 	glCullFace(GL_FRONT);
 }
 
-void OmnidirectionalShadowMap::setLightPos(glm::vec3 lightPos)
-{
-   glUniform3fv(glGetUniformLocation(_depth->Get(), "lightPos"), 1, &lightPos[0]);
-}
-
-void OmnidirectionalShadowMap::setModelFP(glm::mat4 Model)
-{
-   glUniformMatrix4fv(glGetUniformLocation(_depth->Get(), "model"), 1, GL_FALSE, &Model[0][0]);
-}
-
-void OmnidirectionalShadowMap::setFarPlaneFP(float far)
-{
-   glUniform1f(glGetUniformLocation(_depth->Get(), "far_plane"), far);
-}
-
-void OmnidirectionalShadowMap::setShadowMatrices(std::vector<glm::mat4> shadowMatrices)
-{
-   for (GLuint i = 0; i < 6; ++i)
-	glUniformMatrix4fv(glGetUniformLocation(_depth->Get(), 
-			     ("lightVP[" + std::to_string(i) + "]").c_str()),
-			      1, GL_FALSE, &shadowMatrices[i][0][0]);
-}
-
 void OmnidirectionalShadowMap::SecondPassSetup()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -109,44 +86,61 @@ void OmnidirectionalShadowMap::SecondPassSetup()
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 	glCullFace(GL_BACK);
-	// glDisable( GL_CULL_FACE );	// ??
 }
 
-void OmnidirectionalShadowMap::setModelSP(glm::mat4 Model)
+void OmnidirectionalShadowMap::SetLightPosition_Depth(glm::vec3 lightPos)
 {
-   glUniformMatrix4fv(glGetUniformLocation(_light->Get(), "model"), 1, GL_FALSE, &Model[0][0]);
+	glUniform3fv(glGetUniformLocation(_depth->Get(), "light_position"), 1, &lightPos[0]);
 }
 
-void OmnidirectionalShadowMap::setView(glm::mat4 View)
+void OmnidirectionalShadowMap::SetLightPosition_Light(glm::vec3 lightPos)
 {
-   glUniformMatrix4fv(glGetUniformLocation(_light->Get(), "view" ), 1, GL_FALSE, &View[0][0]);
+	glUniform3fv(glGetUniformLocation(_light->Get(), "light_position"), 1, &lightPos[0]);
 }
 
-void OmnidirectionalShadowMap::setProj(glm::mat4 Proj)
+void OmnidirectionalShadowMap::SetModelMatrix_Depth(glm::mat4 Model)
 {
-   glUniformMatrix4fv(glGetUniformLocation(_light->Get(), "projection"), 1, GL_FALSE, &Proj[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(_depth->Get(), "model"), 1, GL_FALSE, &Model[0][0]);
 }
 
-void OmnidirectionalShadowMap::setFarPlaneSP(float far)
+void OmnidirectionalShadowMap::SetModelMatrix_Light(glm::mat4 Model)
 {
-   glUniform1f(glGetUniformLocation(_light->Get(), "far_plane"), far);
+	glUniformMatrix4fv(glGetUniformLocation(_light->Get(), "model"), 1, GL_FALSE, &Model[0][0]);
 }
 
-void OmnidirectionalShadowMap::setReverseNor(bool flag)
+void OmnidirectionalShadowMap::SetFarPlane_Depth(float far)
 {
-   glUniform1f(glGetUniformLocation(_light->Get(), "reverse_normals"), (int)flag);
+	glUniform1f(glGetUniformLocation(_depth->Get(), "far_plane"), far);
 }
 
-void OmnidirectionalShadowMap::setPointLight(glm::vec3 pos, glm::vec3 ambient, glm::vec3 diffuse)
+void OmnidirectionalShadowMap::SetFarPlane_Light(float far)
 {
-   glUniform3fv(glGetUniformLocation(_light->Get(), "pLight.position"), 1, &pos[0]);
-   glUniform3fv(glGetUniformLocation(_light->Get(), "pLight.ambient" ), 1, &ambient[0]);
-   glUniform3fv(glGetUniformLocation(_light->Get(), "pLight.diffuse" ), 1, &diffuse[0]);
+	glUniform1f(glGetUniformLocation(_light->Get(), "far_plane"), far);
 }
 
-void OmnidirectionalShadowMap::setDepthTexture(uint offset)
+void OmnidirectionalShadowMap::SetShadowMatrices(std::vector<glm::mat4> shadowMatrices)
 {
-   glActiveTexture(GL_TEXTURE7);
-   glBindTexture(GL_TEXTURE_CUBE_MAP, _depth_texture);
-   glUniform1i(glGetUniformLocation(_light->Get(), "shadowMap"), 7);
+	for (GLuint i = 0; i < 6; ++i)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(_depth->Get(), 
+			("lightVP[" + std::to_string(i) + "]").c_str()), 
+			1, GL_FALSE, &shadowMatrices[i][0][0]);
+	}
+}
+
+void OmnidirectionalShadowMap::SetViewMatrix(glm::mat4 View)
+{
+	glUniformMatrix4fv(glGetUniformLocation(_light->Get(), "view" ), 1, GL_FALSE, &View[0][0]);
+}
+
+void OmnidirectionalShadowMap::SetProjectionMatrix(glm::mat4 Proj)
+{
+	glUniformMatrix4fv(glGetUniformLocation(_light->Get(), "projection"), 1, GL_FALSE, &Proj[0][0]);
+}
+
+void OmnidirectionalShadowMap::SetDepthTexture()
+{
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, _depth_texture);
+	glUniform1i(glGetUniformLocation(_light->Get(), "shadow_map"), 7);
 }

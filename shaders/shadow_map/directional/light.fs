@@ -9,18 +9,21 @@ uniform sampler2D shadowMap;
 uniform mat4 view;
 uniform mat4 projection;
 
+// Global variables.
+vec3 ambientColor = vec3(0.2f);
+vec3 diffuseColor = vec3(0.8f);
+
 vec3 CalculateDirectionalLight(vec3 normal)
 {
-	// ...
-	vec3 eye_lightDir = ( view * vec4( lightDir, 0.0f ) ).xyz;
+	vec3 eye_lightPos = (view * vec4(lightDir, 0.0f)).xyz;
+	
+	vec3 light_direction = normalize(eye_lightPos);
 
-	vec3 l = normalize(eye_lightDir);
-
-	float cosTheta = max(dot(normal, l), 0.0 );
+	float cosTheta = max(dot(normal, light_direction), 0.0f);
 
 	// Diffuse and ambient color values.
-	vec3 diffuse = vec3(0.8f) * cosTheta;
-	vec3 ambient = vec3(0.2f);
+	vec3 ambient = ambientColor;
+	vec3 diffuse = diffuseColor * cosTheta;
 
 	return ambient + diffuse;
 }
