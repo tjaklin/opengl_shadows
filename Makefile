@@ -8,7 +8,8 @@ FILES_SOURCE =Application.cpp src/Window.cpp src/Camera.cpp \
 	src/VertexAttributeParser.cpp src/Model.cpp src/Shader.cpp \
 	src/Scene.cpp src/DefaultScene.cpp src/DirectionalShadowMapScene.cpp \
 	src/DirectionalShadowMap.cpp src/OmnidirectionalShadowMapScene.cpp \
-	src/OmnidirectionalShadowMap.cpp
+	src/OmnidirectionalShadowMap.cpp src/VarianceShadowMapScene.cpp \
+	src/VarianceShadowMap.cpp
 
 #FILES_HEADER =???
 
@@ -65,6 +66,14 @@ obj/src/OmnidirectionalShadowMapScene.o: src/OmnidirectionalShadowMapScene.cpp i
 	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
 
 obj/src/OmnidirectionalShadowMap.o: src/OmnidirectionalShadowMap.cpp inc/OmnidirectionalShadowMap.hpp
+	mkdir -p obj/src/
+	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
+
+obj/src/VarianceShadowMapScene.o: src/VarianceShadowMapScene.cpp inc/VarianceShadowMapScene.hpp inc/Scene.hpp
+	mkdir -p obj/src/
+	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
+
+obj/src/VarianceShadowMap.o: src/VarianceShadowMap.cpp inc/VarianceShadowMap.hpp
 	mkdir -p obj/src/
 	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
 
