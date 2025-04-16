@@ -3,7 +3,7 @@
 in vec4 mvp_position;
 
 void main()
-{
+{	
 	float depth = mvp_position.z / mvp_position.w;
 	depth = depth * 0.5f + 0.5f;
 

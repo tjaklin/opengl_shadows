@@ -14,9 +14,9 @@ out vec4 light_position;
 
 void main()
 {
-	light_position = biasMVP * vec4(position, 1.0f);
 	eye_position = (view * model * vec4(position, 1.0f)).xyz;
 	eye_normal = (view * model * vec4(normal, 0.0f)).xyz;
+	light_position = biasMVP * vec4(position, 1.0f);
 
 	gl_Position = projection * view * model * vec4(position, 1.0f);
 }

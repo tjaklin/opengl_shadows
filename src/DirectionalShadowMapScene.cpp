@@ -131,7 +131,7 @@ void DirectionalShadowMapScene::Run() const
         shadowMap.SetLightMvpMatrix(light_vp_matrix * podlogaModel);
         podloga.Draw();
 
-        bool debug_pass = false;
+        bool debug_pass = true;
         // Render the depth_texture to a 2D rectangle.
         if (debug_pass)
         {

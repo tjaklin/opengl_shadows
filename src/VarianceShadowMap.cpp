@@ -1,7 +1,9 @@
 #include "../inc/VarianceShadowMap.hpp"
 
-VarianceShadowMap::VarianceShadowMap(uint window_w, uint window_h, uint shadow_w, uint shadow_h)
-    : _window_w(window_w), _window_h(window_h), _shadow_w(shadow_w), _shadow_h(shadow_h)
+VarianceShadowMap::VarianceShadowMap(uint window_w, uint window_h, uint shadow_w, uint shadow_h, uint blur_w, uint blur_h)
+    : _window_w(window_w), _window_h(window_h)
+    , _shadow_w(shadow_w), _shadow_h(shadow_h)
+    , _blur_w(blur_w), _blur_h(blur_h)
 {}
 
 VarianceShadowMap::~VarianceShadowMap()
@@ -37,8 +39,8 @@ void VarianceShadowMap::PrepareDepthFBOandTexture()
 	glBindTexture(GL_TEXTURE_2D, _depth_texture);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F,
-        _window_w * _shadow_factor,
-        _window_h * _shadow_factor,
+        _shadow_w,
+        _shadow_h,
         0, GL_RGBA, GL_FLOAT, 0);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -70,7 +72,7 @@ void VarianceShadowMap::PrepareBlurFBOandTexture()
 	glBindTexture(GL_TEXTURE_2D, _blur_texture);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F,
-        _window_w * _shadow_factor * _blur_factor, _window_h * _shadow_factor * _blur_factor,
+        _blur_w, _blur_h,
         0, GL_RGBA, GL_FLOAT, 0);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -105,37 +107,45 @@ void VarianceShadowMap::LoadShaders(const Shader* depth, const Shader* blur, con
 void VarianceShadowMap::FirstPassSetup()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, _depth_fbo);
-    glViewport(0, 0, _window_w * _shadow_factor, _window_h * _shadow_factor);
+    glViewport(0, 0, _shadow_w, _shadow_h);
     glColorMask(GL_TRUE, GL_TRUE, GL_FALSE, GL_FALSE);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     _depth->Bind();
 
-	glDrawBuffer(GL_COLOR_ATTACHMENT0);
 	glCullFace(GL_FRONT);
+}
+
+void VarianceShadowMap::DebugPassSetup(const Shader* debug)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, _window_w, _window_h);
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	debug->Bind();
+
+	glCullFace(GL_BACK);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, _depth_texture);
+	glUniform1i(glGetUniformLocation(debug->Get(), "depth_map"), 3);
 }
 
 void VarianceShadowMap::BlurPassXSetup()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, _blur_fbo);
-	glViewport(0, 0, _window_w * _shadow_factor * _blur_factor,
-        _window_h * _shadow_factor * _blur_factor);
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glViewport(0, 0, _blur_w, _blur_h);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     _blur->Bind();
 
-	glColorMask(GL_TRUE, GL_TRUE, GL_FALSE, GL_FALSE);
     glCullFace(GL_BACK);
 }
 
 void VarianceShadowMap::BlurPassYSetup()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, _depth_fbo);
-    glViewport(0, 0, _window_w * _shadow_factor, _window_w * _shadow_factor);
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);    // Ovo sam ja na blef dodal. Mozda smeta.
+    glViewport(0, 0, _shadow_w, _shadow_h);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     _blur->Bind();
 
-    glColorMask(GL_TRUE, GL_TRUE, GL_FALSE, GL_FALSE);
     glCullFace(GL_BACK);
 }
 

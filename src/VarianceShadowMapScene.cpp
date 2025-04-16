@@ -9,25 +9,17 @@ void VarianceShadowMapScene::Run() const
     // Prepare the scene's main Camera object
 	Camera eye;
 	glm::vec3 eyePosition = glm::vec3(0.0f, 5.0f, 20.0f);
-    eyePosition = glm::vec3(-5.0f, 2.0f,-5.0f);
-
     glm::vec3 eyeLookAt = glm::vec3(0.0f, 0.0f, 0.0f);
-    eyeLookAt = glm::vec3(-3.0f, 1.5f,-1.0f);
-
 	eye.SetViewMatrix(eyePosition, eyeLookAt, glm::vec3(0,1,0));
 	eye.SetPerspectiveProjectionMatrix(45.0f, 4.0f/3.0f, 1.0f, 100.0f);
 
     // Set the scene's directional light source Camera object.
     Camera light;
     glm::vec3 lightPosition = glm::vec3(10.0f, 15.0f, 10.0f);
-    lightPosition = glm::vec3(-4.0, 6.0f,-2.0f);
-
     glm::vec3 lightLookAt = glm::vec3(0.0f, 0.0f, 0.0f);
-    lightLookAt = glm::vec3(-3.0f, 1.5f,-1.0f);
 
     light.SetViewMatrix(lightPosition, lightLookAt, glm::vec3(0,1,0));
-    //light.SetOrthogonalProjectionMatrix(-10, 10, -20, 20, -10, 50);
-    light.SetOrthogonalProjectionMatrix(-10, 10, -10, 10, -10, 40);
+    light.SetOrthogonalProjectionMatrix(-10, 10, -20, 20, -10, 50);
 
 	// Set the scene's main camera object.
 	// This enables it to handle movement input events.
@@ -125,7 +117,7 @@ void VarianceShadowMapScene::Run() const
     Shader debugShader(vertexDebugFilepath, fragmentDebugFilepath);
 
 	// Set up the Variance Shadow Map object.
-	VarianceShadowMap shadowMap(1024, 1024, 1024, 1024);
+	VarianceShadowMap shadowMap(1024, 1024, 1024, 1024, 1024, 1024);
 	shadowMap.LoadShaders(&shadowMapDepth, &shadowMapBlur, &shadowMapLight);
 	shadowMap.PrepareDepthFBOandTexture();
 	shadowMap.PrepareBlurFBOandTexture();
@@ -150,57 +142,65 @@ void VarianceShadowMapScene::Run() const
 
         // First rendering pass.
         shadowMap.FirstPassSetup();
-        lightMVP = light.GetProjectionMatrix() * light.GetViewMatrix() * kocka1Model;
-        shadowMap.SetLightMVP(lightMVP);
-
-        kocka1.Draw();
-
-        lightMVP = light.GetProjectionMatrix() * light.GetViewMatrix() * kocka2Model;
-        shadowMap.SetLightMVP(lightMVP);
-
-        kocka2.Draw();
-
-        // 1st blur pass.
-        shadowMap.BlurPassXSetup();
-        shadowMap.SetFilterValueX_Blur();
-        shadowMap.SetDepthTexture_Blur(BlurPassType::X);
-
-        canvas.Draw();
-
-        // 2nd blur pass.
-        shadowMap.BlurPassYSetup();
-        shadowMap.SetFilterValueY_Blur();
-        shadowMap.SetDepthTexture_Blur(BlurPassType::Y);
-
-        canvas.Draw();
-
-        // Second rendering pass.
-        shadowMap.SecondPassSetup();
-        shadowMap.SetLightDirection(lightPosition);
-        shadowMap.SetViewMatrix(eye.GetViewMatrix());
-        shadowMap.SetProjectionMatrix(eye.GetProjectionMatrix());
-        shadowMap.SetDepthTexture_Light();
-
-        lightMVP = light.GetProjectionMatrix() * light.GetViewMatrix() * kocka1Model;
-        biasLightMVP = biasMatrix * lightMVP;
-        shadowMap.SetModelMatrix(kocka1Model);
-        shadowMap.SetBiasedLightMVP(biasLightMVP);
-
-        kocka1.Draw();
-
-        lightMVP = light.GetProjectionMatrix() * light.GetViewMatrix() * kocka2Model;
-        biasLightMVP = biasMatrix * lightMVP;
-        shadowMap.SetModelMatrix(kocka2Model);
-        shadowMap.SetBiasedLightMVP(biasLightMVP);
-
-        kocka2.Draw();
 
         lightMVP = light.GetProjectionMatrix() * light.GetViewMatrix() * podlogaModel;
-        biasLightMVP = biasMatrix * lightMVP;
-        shadowMap.SetModelMatrix(podlogaModel);
-        shadowMap.SetBiasedLightMVP(biasLightMVP);
-
+        shadowMap.SetLightMVP(lightMVP);
         podloga.Draw();
+
+        lightMVP = light.GetProjectionMatrix() * light.GetViewMatrix() * kocka1Model;
+        shadowMap.SetLightMVP(lightMVP);
+        kocka1.Draw();
+
+        lightMVP = light.GetProjectionMatrix() * light.GetViewMatrix() * kocka2Model;
+        shadowMap.SetLightMVP(lightMVP);
+        kocka2.Draw();
+
+        bool debug_pass = false;
+        // Render the depth_texture to a 2D rectangle.
+        if (debug_pass)
+        {
+            shadowMap.DebugPassSetup(&debugShader);
+            canvas.Draw();
+        }
+        else
+        {
+            // 1st blur pass.
+            shadowMap.BlurPassXSetup();
+            shadowMap.SetFilterValueX_Blur();
+            shadowMap.SetDepthTexture_Blur(BlurPassType::X);
+            canvas.Draw();
+
+            // 2nd blur pass.
+            shadowMap.BlurPassYSetup();
+            shadowMap.SetFilterValueY_Blur();
+            shadowMap.SetDepthTexture_Blur(BlurPassType::Y);
+            canvas.Draw();
+
+            // Second rendering pass.
+            shadowMap.SecondPassSetup();
+            shadowMap.SetLightDirection(lightPosition);
+            shadowMap.SetViewMatrix(eye.GetViewMatrix());
+            shadowMap.SetProjectionMatrix(eye.GetProjectionMatrix());
+            shadowMap.SetDepthTexture_Light();
+
+            lightMVP = light.GetProjectionMatrix() * light.GetViewMatrix() * kocka1Model;
+            biasLightMVP = biasMatrix * lightMVP;
+            shadowMap.SetModelMatrix(kocka1Model);
+            shadowMap.SetBiasedLightMVP(biasLightMVP);
+            kocka1.Draw();
+
+            lightMVP = light.GetProjectionMatrix() * light.GetViewMatrix() * kocka2Model;
+            biasLightMVP = biasMatrix * lightMVP;
+            shadowMap.SetModelMatrix(kocka2Model);
+            shadowMap.SetBiasedLightMVP(biasLightMVP);
+            kocka2.Draw();
+
+            lightMVP = light.GetProjectionMatrix() * light.GetViewMatrix() * podlogaModel;
+            biasLightMVP = biasMatrix * lightMVP;
+            shadowMap.SetModelMatrix(podlogaModel);
+            shadowMap.SetBiasedLightMVP(biasLightMVP);
+            podloga.Draw();
+        }
 
         _window->Draw();
     }
