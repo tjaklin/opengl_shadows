@@ -6,21 +6,22 @@
 
 #include <cstdio>
 
-VertexAttribute VertexAttributeParser::ProcessFile(const char* filepath)
+template<typename T>
+VertexAttribute<T> VertexAttributeParser<T>::ProcessFile(const char* filepath)
 {
     std::ifstream file(filepath);
     if (!file.is_open())
     {
         printf("[VertexAttributeParser] Error processing file '%s'.\n", filepath);
-        return VertexAttribute();
+        return VertexAttribute<T>();
     }
 
-    std::istream_iterator<float> is_iter(file);
-    std::istream_iterator<float> eof;
+    std::istream_iterator<T> is_iter(file);
+    std::istream_iterator<T> eof;
 
-    std::vector<float> buffer(is_iter, eof);
+    std::vector<T> buffer(is_iter, eof);
 
-    VertexAttribute va;
+    VertexAttribute<T> va;
     // Dimension is currently fixed to be 3, as this value is the most commonly used
     //  one. Even the values that are 2D (eg. texture coordinates for a 2D texture) are
     //  currently expected to be defined with 3 dimensions (the third compomponent should

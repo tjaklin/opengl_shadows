@@ -5,6 +5,7 @@
 Model::Model()
 {
 	glGenVertexArrays(1, &_vao);
+	glGenBuffers(1, &_ebo);
 }
 
 Model::~Model()
@@ -19,12 +20,21 @@ Model::~Model()
 		_vbo = 255; // 255 means invalid value.
 	}
 
+	if (_ebo != 255)
+	{
+		// Unbind buffer set to 'GL_ELEMENT_ARRAY_BUFFER' target, in
+		//	case it's the '_vbo'.
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glDeleteBuffers(1, &_ebo);
+		_ebo = 255; // 255 means invalid value.
+	}
+
 	glBindVertexArray(0);
 	glDeleteVertexArrays(1, &_vao);
 	_vao = 255;	// 255 means invalid value.
 }
 
-void Model::PushVertexAttribute(VertexAttribute& attribute, unsigned int location)
+void Model::PushVertexAttribute(VertexAttribute<float>& attribute, unsigned int location)
 {
 	GLint current_size = 0;
 	if (_vbo != 255)
@@ -96,10 +106,34 @@ void Model::PushVertexAttribute(VertexAttribute& attribute, unsigned int locatio
 	_number_of_vertices = (GLuint) attribute.count / attribute.dimension;
 }
 
+void Model::SetElementArrayBuffer(VertexAttribute<unsigned int>& attribute)
+{
+	// Turn attribute into unsigned int
+
+	glBindVertexArray(_vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, attribute.count * sizeof(unsigned int),
+		attribute.data.data(), GL_STATIC_DRAW);
+	glBindVertexArray(0);
+}
+
 void Model::Draw() const
 {
 	glBindVertexArray(_vao);
 	glDrawArrays(GL_TRIANGLES, 0, _number_of_vertices);
+	glBindVertexArray(0);
+}
+
+// TODO: Make it work !
+void Model::DrawVolume() const
+{
+	glBindVertexArray(_vao);
+
+	GLint current_size = 0xFF;
+	glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &current_size);
+	printf("[DrawVolume] Current size %d\n", current_size);
+
+	glDrawElements(GL_TRIANGLES, _number_of_vertices, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
 

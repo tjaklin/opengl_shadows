@@ -19,7 +19,7 @@ void DefaultScene::Run() const
 	
 	// Prepare 3D shape data.
 	const char* cube_position_filepath = "vertices/cube_position.txt";
-	VertexAttribute position = VertexAttributeParser::ProcessFile(cube_position_filepath);
+	VertexAttribute<float> position = VertexAttributeParser<float>::ProcessFile(cube_position_filepath);
 	if (position.data.empty())
     {
         // TODO: Think about changing this to use exceptions, instead
@@ -29,7 +29,7 @@ void DefaultScene::Run() const
     }
 	
 	const char* cube_color_filepath = "vertices/cube_color.txt";
-	VertexAttribute color = VertexAttributeParser::ProcessFile(cube_color_filepath);
+	VertexAttribute<float> color = VertexAttributeParser<float>::ProcessFile(cube_color_filepath);
 	if (color.data.empty())
     {
         printf("VertexAttribute is empty. Exiting.\n");

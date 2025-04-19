@@ -4,6 +4,7 @@
 #include "inc/DirectionalShadowMapScene.hpp"
 #include "inc/OmnidirectionalShadowMapScene.hpp"
 #include "inc/VarianceShadowMapScene.hpp"
+#include "inc/ShadowVolumeScene.hpp"
 
 int main(int argc, char** argv)
 {
@@ -21,8 +22,11 @@ int main(int argc, char** argv)
     //OmnidirectionalShadowMapScene omni_shadowmap_scene(&window);
     //omni_shadowmap_scene.Run();
 
-    VarianceShadowMapScene var_shadowmap_scene(&window);
-    var_shadowmap_scene.Run();
+    //VarianceShadowMapScene var_shadowmap_scene(&window);
+    //var_shadowmap_scene.Run();
+
+    ShadowVolumeScene shadowvolume_scene(&window);
+    shadowvolume_scene.Run();
 
     return 0;
 }

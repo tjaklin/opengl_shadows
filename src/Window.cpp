@@ -38,9 +38,12 @@ Window::Window(int width, int height, const char* title)
 
     // Set OpenGL's state.
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_STENCIL_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+    glClearStencil(0);
     glClearColor(0.2f, 1.0f, 1.0f, 1.0f);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 Window::~Window()
@@ -51,7 +54,7 @@ Window::~Window()
 
 void Window::Clear() const
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 void Window::Update() const

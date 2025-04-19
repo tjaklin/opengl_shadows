@@ -17,7 +17,6 @@ void VarianceShadowMapScene::Run() const
     Camera light;
     glm::vec3 lightPosition = glm::vec3(10.0f, 15.0f, 10.0f);
     glm::vec3 lightLookAt = glm::vec3(0.0f, 0.0f, 0.0f);
-
     light.SetViewMatrix(lightPosition, lightLookAt, glm::vec3(0,1,0));
     light.SetOrthogonalProjectionMatrix(-10, 10, -20, 20, -10, 50);
 
@@ -27,7 +26,7 @@ void VarianceShadowMapScene::Run() const
 
     // Prepare 3D shape data.
 	const char* cube_position_filepath = "vertices/cube_position.txt";
-	VertexAttribute position = VertexAttributeParser::ProcessFile(cube_position_filepath);
+	VertexAttribute<float> position = VertexAttributeParser<float>::ProcessFile(cube_position_filepath);
 	if (position.data.empty())
     {
         printf("VertexAttribute is empty. Exiting.\n");
@@ -35,7 +34,7 @@ void VarianceShadowMapScene::Run() const
     }
 	
 	const char* cube_normal_filepath = "vertices/cube_normal.txt";
-	VertexAttribute normal = VertexAttributeParser::ProcessFile(cube_normal_filepath);
+	VertexAttribute<float> normal = VertexAttributeParser<float>::ProcessFile(cube_normal_filepath);
 	if (normal.data.empty())
     {
         printf("VertexAttribute is empty. Exiting.\n");
@@ -44,7 +43,7 @@ void VarianceShadowMapScene::Run() const
 
     // Prepare 2D shape data (For rectangle drawing).
     const char* rectangle_position_filepath = "vertices/rectangle_position.txt";
-    VertexAttribute rectangle_position = VertexAttributeParser::ProcessFile(rectangle_position_filepath);
+    VertexAttribute<float> rectangle_position = VertexAttributeParser<float>::ProcessFile(rectangle_position_filepath);
     if (rectangle_position.data.empty())
     {
         printf("[VertexAttribute] Rectangle position data empty!");
@@ -52,7 +51,7 @@ void VarianceShadowMapScene::Run() const
     }
 
     const char* rectangle_normal_filepath = "vertices/rectangle_normal.txt";
-    VertexAttribute rectangle_normal = VertexAttributeParser::ProcessFile(rectangle_normal_filepath);
+    VertexAttribute<float> rectangle_normal = VertexAttributeParser<float>::ProcessFile(rectangle_normal_filepath);
     if (rectangle_normal.data.empty())
     {
         printf("[VertexAttribute] Rectangle normal data empty!");
@@ -60,7 +59,7 @@ void VarianceShadowMapScene::Run() const
     }
 
     const char* rectangle_uv_filepath = "vertices/rectangle_uv.txt";
-    VertexAttribute rectangle_uv = VertexAttributeParser::ProcessFile(rectangle_uv_filepath);
+    VertexAttribute<float> rectangle_uv = VertexAttributeParser<float>::ProcessFile(rectangle_uv_filepath);
     if (rectangle_uv.data.empty())
     {
         printf("[VertexAttribute] Rectangle UV data empty!");

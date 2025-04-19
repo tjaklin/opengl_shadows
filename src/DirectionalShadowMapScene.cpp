@@ -25,7 +25,7 @@ void DirectionalShadowMapScene::Run() const
 
     // Prepare 3D shape data.
 	const char* cube_position_filepath = "vertices/cube_position.txt";
-	VertexAttribute position = VertexAttributeParser::ProcessFile(cube_position_filepath);
+	VertexAttribute<float> position = VertexAttributeParser<float>::ProcessFile(cube_position_filepath);
 	if (position.data.empty())
     {
         printf("VertexAttribute is empty. Exiting.\n");
@@ -33,7 +33,7 @@ void DirectionalShadowMapScene::Run() const
     }
 	
 	const char* cube_normal_filepath = "vertices/cube_normal.txt";
-	VertexAttribute normal = VertexAttributeParser::ProcessFile(cube_normal_filepath);
+	VertexAttribute<float> normal = VertexAttributeParser<float>::ProcessFile(cube_normal_filepath);
 	if (normal.data.empty())
     {
         printf("VertexAttribute is empty. Exiting.\n");
@@ -42,7 +42,7 @@ void DirectionalShadowMapScene::Run() const
 
     // Prepare 2D shape data (For rectangle drawing).
     const char* rectangle_position_filepath = "vertices/rectangle_position.txt";
-    VertexAttribute rectangle_position = VertexAttributeParser::ProcessFile(rectangle_position_filepath);
+    VertexAttribute<float> rectangle_position = VertexAttributeParser<float>::ProcessFile(rectangle_position_filepath);
     if (rectangle_position.data.empty())
     {
         printf("[VertexAttribute] Rectangle position data empty!");
@@ -50,7 +50,7 @@ void DirectionalShadowMapScene::Run() const
     }
 
     const char* rectangle_uv_filepath = "vertices/rectangle_uv.txt";
-    VertexAttribute rectangle_uv = VertexAttributeParser::ProcessFile(rectangle_uv_filepath);
+    VertexAttribute<float> rectangle_uv = VertexAttributeParser<float>::ProcessFile(rectangle_uv_filepath);
     if (rectangle_uv.data.empty())
     {
         printf("[VertexAttribute] Rectangle UV data empty!");
