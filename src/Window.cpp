@@ -37,13 +37,15 @@ Window::Window(int width, int height, const char* title)
     glfwSetWindowPos(_window, 960, 0);
 
     // Set OpenGL's state.
+    glViewport(0, 0, width, height);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_STENCIL_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+    glFrontFace(GL_CCW);
     glClearStencil(0);
     glClearColor(0.2f, 1.0f, 1.0f, 1.0f);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 Window::~Window()

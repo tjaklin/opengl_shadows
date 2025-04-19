@@ -190,11 +190,6 @@ void ShadowVolume::SetMVP_Depth(glm::mat4 mvp)
     glUniformMatrix4fv(glGetUniformLocation(_geometry->Get(), "MVP"), 1, GL_FALSE, &mvp[0][0]);
 }
 
-void ShadowVolume::SetReverseNor(bool flag)
-{
-    glUniform1i( glGetUniformLocation(_geometry->Get(), "reverse_normal"), (int)flag);
-}
-
 void ShadowVolume::SetModel_Depth(glm::mat4 m)
 {
     glUniformMatrix4fv(glGetUniformLocation(_geometry->Get(), "model"), 1, GL_FALSE, &m[0][0]);

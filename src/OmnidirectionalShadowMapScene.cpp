@@ -19,7 +19,7 @@ void OmnidirectionalShadowMapScene::Run() const
     _window->SetCamera(&eye);
 
     const char* cube_position_filepath = "vertices/cube_position.txt";
-    VertexAttribute<float> position = VertexAttributeParser<float>::ProcessFile(cube_position_filepath);
+    VertexAttribute position = VertexAttributeParser::ProcessFile(cube_position_filepath);
     if (position.data.empty())
     {
         // An error occurred in getting vertex data.
@@ -28,7 +28,7 @@ void OmnidirectionalShadowMapScene::Run() const
     }
     
     const char* cube_normal_filepath = "vertices/cube_normal.txt";
-    VertexAttribute<float> normal = VertexAttributeParser<float>::ProcessFile(cube_normal_filepath);
+    VertexAttribute normal = VertexAttributeParser::ProcessFile(cube_normal_filepath);
     if (normal.data.empty())
     {
         // An error occurred in getting vertex data.

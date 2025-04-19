@@ -26,8 +26,8 @@ public:
 
 	void Draw() const;
 	void DrawVolume() const;
-	void PushVertexAttribute(VertexAttribute<float>& attribute, unsigned int location);
-	void SetElementArrayBuffer(VertexAttribute<unsigned int>& attribute);
+	void PushVertexAttribute(VertexAttribute& attribute, unsigned int location);
+	void SetElementArrayBuffer(VertexAttribute& attribute);
 	
 private:
 	void RecalculateModelMatrix();
@@ -43,5 +43,5 @@ private:
 	glm::mat4 _translation = glm::mat4(1.0f);
 	glm::mat4 _model = glm::mat4(1.0f);
 
-	std::vector<VertexAttributeLayout<float>> _attribute_layouts;
+	std::vector<VertexAttributeLayout> _attribute_layouts;
 };

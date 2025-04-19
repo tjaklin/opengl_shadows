@@ -24,7 +24,6 @@ public:
 
 	void SetModel_Depth(glm::mat4 M);
 	void SetMVP_Depth(glm::mat4 MVP);
-	void SetReverseNor(bool flag);
 
 	void SetModel_Volume(glm::mat4 M);
 	void SetView_Volume(glm::mat4 V);

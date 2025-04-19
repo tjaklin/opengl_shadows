@@ -21,7 +21,7 @@ void ShadowVolumeScene::Run() const
 
     // Prepare 3D shape data.
 	const char* cube_position_filepath = "vertices/cube_position.txt";
-	VertexAttribute<float> position = VertexAttributeParser<float>::ProcessFile(cube_position_filepath);
+	VertexAttribute position = VertexAttributeParser::ProcessFile(cube_position_filepath);
 	if (position.data.empty())
     {
         printf("VertexAttribute is empty. Exiting.\n");
@@ -29,7 +29,7 @@ void ShadowVolumeScene::Run() const
     }
 	
 	const char* cube_normal_filepath = "vertices/cube_normal.txt";
-	VertexAttribute<float> normal = VertexAttributeParser<float>::ProcessFile(cube_normal_filepath);
+	VertexAttribute normal = VertexAttributeParser::ProcessFile(cube_normal_filepath);
 	if (normal.data.empty())
     {
         printf("VertexAttribute is empty. Exiting.\n");
@@ -38,7 +38,7 @@ void ShadowVolumeScene::Run() const
 
     // Prepare 2D shape data (For rectangle drawing).
     const char* rectangle_position_filepath = "vertices/rectangle_position.txt";
-    VertexAttribute<float> rectangle_position = VertexAttributeParser<float>::ProcessFile(rectangle_position_filepath);
+    VertexAttribute rectangle_position = VertexAttributeParser::ProcessFile(rectangle_position_filepath);
     if (rectangle_position.data.empty())
     {
         printf("[VertexAttribute] Rectangle position data empty!");
@@ -46,7 +46,7 @@ void ShadowVolumeScene::Run() const
     }
 
     const char* rectangle_normal_filepath = "vertices/rectangle_normal.txt";
-    VertexAttribute<float> rectangle_normal = VertexAttributeParser<float>::ProcessFile(rectangle_normal_filepath);
+    VertexAttribute rectangle_normal = VertexAttributeParser::ProcessFile(rectangle_normal_filepath);
     if (rectangle_normal.data.empty())
     {
         printf("[VertexAttribute] Rectangle normal data empty!");
@@ -54,7 +54,7 @@ void ShadowVolumeScene::Run() const
     }
 
     const char* rectangle_uv_filepath = "vertices/rectangle_uv.txt";
-    VertexAttribute<float> rectangle_uv = VertexAttributeParser<float>::ProcessFile(rectangle_uv_filepath);
+    VertexAttribute rectangle_uv = VertexAttributeParser::ProcessFile(rectangle_uv_filepath);
     if (rectangle_uv.data.empty())
     {
         printf("[VertexAttribute] Rectangle UV data empty!");
@@ -62,7 +62,7 @@ void ShadowVolumeScene::Run() const
     }
 
     const char* volume_elements_filepath = "vertices/volume_elements.txt";
-    VertexAttribute<unsigned int> volume_elements = VertexAttributeParser<unsigned int>::ProcessFile(volume_elements_filepath);
+    VertexAttribute volume_elements = VertexAttributeParser::ProcessFile(volume_elements_filepath);
     if (volume_elements.data.empty())
     {
         printf("[VertexAttribute] Volume elements data empty!");
@@ -128,7 +128,6 @@ void ShadowVolumeScene::Run() const
         glm::mat4 lightMVP;
         // Perform a geometry pass.
         shadowVolume.GeometryPassSetup();
-        shadowVolume.SetReverseNor(false); // Keep false all the time.
 
         lightMVP = eye.GetProjectionMatrix() * eye.GetViewMatrix() * podlogaModel;
         shadowVolume.SetMVP_Depth(lightMVP);

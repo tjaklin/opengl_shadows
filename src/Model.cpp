@@ -34,7 +34,7 @@ Model::~Model()
 	_vao = 255;	// 255 means invalid value.
 }
 
-void Model::PushVertexAttribute(VertexAttribute<float>& attribute, unsigned int location)
+void Model::PushVertexAttribute(VertexAttribute& attribute, unsigned int location)
 {
 	GLint current_size = 0;
 	if (_vbo != 255)
@@ -106,14 +106,20 @@ void Model::PushVertexAttribute(VertexAttribute<float>& attribute, unsigned int 
 	_number_of_vertices = (GLuint) attribute.count / attribute.dimension;
 }
 
-void Model::SetElementArrayBuffer(VertexAttribute<unsigned int>& attribute)
+void Model::SetElementArrayBuffer(VertexAttribute& attribute)
 {
-	// Turn attribute into unsigned int
+	// Turn attribute into UNSIGNED INT, because it will not
+	//	work if left as FLOAT.
+	GLuint indices[attribute.count];
+	for (size_t i=0; i<attribute.count; i++)
+	{
+		indices[i] = attribute.data.at(i);
+	}
 
 	glBindVertexArray(_vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, attribute.count * sizeof(unsigned int),
-		attribute.data.data(), GL_STATIC_DRAW);
+		indices, GL_STATIC_DRAW);
 	glBindVertexArray(0);
 }
 
@@ -124,15 +130,10 @@ void Model::Draw() const
 	glBindVertexArray(0);
 }
 
-// TODO: Make it work !
+// TODO: Make it work with GL_TRIANGLES_ADJACENCY.
 void Model::DrawVolume() const
 {
 	glBindVertexArray(_vao);
-
-	GLint current_size = 0xFF;
-	glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &current_size);
-	printf("[DrawVolume] Current size %d\n", current_size);
-
 	glDrawElements(GL_TRIANGLES, _number_of_vertices, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
