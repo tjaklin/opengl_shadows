@@ -25,7 +25,9 @@ public:
 	const glm::mat4& GetModelMatrix();
 
 	void Draw() const;
+	void DrawVolume() const;
 	void PushVertexAttribute(VertexAttribute& attribute, unsigned int location);
+	void SetElementArrayBuffer(VertexAttribute& attribute);
 	
 private:
 	void RecalculateModelMatrix();
@@ -33,6 +35,7 @@ private:
 private:
 	GLuint _vao = 255;	// 255 means invalid value.
 	GLuint _vbo = 255;	// 255 means invalid value.
+	GLuint _ebo = 255;	// 255 means invalid value.
 	GLuint _number_of_vertices = 0;
 
 	glm::mat4 _scale  = glm::mat4(1.0f);

@@ -69,7 +69,7 @@ void DirectionalShadowMap::PrepareFBOandTexture()
 		glDeleteTextures(1, &_depth_texture);
 		_depth_texture = 255; // 255 means invalid value.
 
-		printf("[CHECK_FB_STATUS]: An error happened! :)\n");
+		printf("[DirectionalShadowMap] glCheckFramebufferStatus error.\n");
 		return;
 	}
 

@@ -17,7 +17,6 @@ void VarianceShadowMapScene::Run() const
     Camera light;
     glm::vec3 lightPosition = glm::vec3(10.0f, 15.0f, 10.0f);
     glm::vec3 lightLookAt = glm::vec3(0.0f, 0.0f, 0.0f);
-
     light.SetViewMatrix(lightPosition, lightLookAt, glm::vec3(0,1,0));
     light.SetOrthogonalProjectionMatrix(-10, 10, -20, 20, -10, 50);
 

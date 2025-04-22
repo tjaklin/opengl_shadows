@@ -5,6 +5,7 @@
 Model::Model()
 {
 	glGenVertexArrays(1, &_vao);
+	glGenBuffers(1, &_ebo);
 }
 
 Model::~Model()
@@ -17,6 +18,15 @@ Model::~Model()
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glDeleteBuffers(1, &_vbo);
 		_vbo = 255; // 255 means invalid value.
+	}
+
+	if (_ebo != 255)
+	{
+		// Unbind buffer set to 'GL_ELEMENT_ARRAY_BUFFER' target, in
+		//	case it's the '_vbo'.
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glDeleteBuffers(1, &_ebo);
+		_ebo = 255; // 255 means invalid value.
 	}
 
 	glBindVertexArray(0);
@@ -96,10 +106,37 @@ void Model::PushVertexAttribute(VertexAttribute& attribute, unsigned int locatio
 	_number_of_vertices = (GLuint) attribute.count / attribute.dimension;
 }
 
+void Model::SetElementArrayBuffer(VertexAttribute& attribute)
+{
+	// Convert 'float' values into 'unsigned int' values for
+	//	GL_ELEMENT_ARRAY_BUFFER buffer to work properly.
+	GLuint indices[attribute.count];
+	for (size_t i=0; i<attribute.count; i++)
+	{
+		indices[i] = attribute.data.at(i);
+	}
+
+	glBindVertexArray(_vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, attribute.count * sizeof(unsigned int),
+		indices, GL_STATIC_DRAW);
+	glBindVertexArray(0);
+}
+
 void Model::Draw() const
 {
 	glBindVertexArray(_vao);
 	glDrawArrays(GL_TRIANGLES, 0, _number_of_vertices);
+	glBindVertexArray(0);
+}
+
+void Model::DrawVolume() const
+{
+	glBindVertexArray(_vao);
+	// TODO: This is very ugly. Make it better later.
+	//	'vertices_count' should equal '72' for cube shaped objects.
+	const GLsizei vertices_count = _number_of_vertices * 9;
+	glDrawElements(GL_TRIANGLES_ADJACENCY, vertices_count, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
 
@@ -116,7 +153,7 @@ void Model::SetScale(const glm::vec3& scaleVector)
 
 void Model::SetRotation(glm::vec3 vector, float angle)
 {
-	_rotation = glm::rotate(angle, vector);	// Za ovo treba 'GLM EXPERIMENTAL'
+	_rotation = glm::rotate(angle, vector);	// 'GLM EXPERIMENTAL'
 	RecalculateModelMatrix();
 
 }
