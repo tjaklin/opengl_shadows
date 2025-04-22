@@ -23,7 +23,7 @@ int main(int argc, char** argv)
         SHADOWVOLUME
     };
 
-    switch (ActiveScene::SHADOWVOLUME)
+    switch (ActiveScene::DEFAULT)
     {
         case ActiveScene::DEFAULT:
             scene = new DefaultScene(&window);
