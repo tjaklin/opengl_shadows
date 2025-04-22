@@ -72,7 +72,7 @@ void main()
             ExtrudeVol(StartVertex, EndVertex);
         }
 
-	// zatvori prednju stranu volumena
+	    // zatvori prednju stranu volumena
         LightDir = (normalize(world_position[0] - light_position));
         gl_Position = projection * view * vec4((world_position[0] + LightDir * faktor), 1.0);
         EmitVertex();

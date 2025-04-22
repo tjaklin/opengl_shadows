@@ -18,9 +18,9 @@ public:
 
 	void GeometryPassSetup();
 	void VolumePassSetup();
-	//void DebugPassSetup(const Shader* debug);	// For the purpose of rendering the depth texture's contents.
+	void DebugPassSetup(const Shader* debug);
 	void LightPassSetup();
-	void BlitFBO();
+	void CopyDrawnSceneToDefaultFBO();
 
 	void SetModel_Depth(glm::mat4 M);
 	void SetMVP_Depth(glm::mat4 MVP);

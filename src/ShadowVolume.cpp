@@ -9,7 +9,15 @@ ShadowVolume::ShadowVolume(uint window_w, uint window_h, uint shadow_w, uint sha
 
 ShadowVolume::~ShadowVolume()
 {
-	// TODO: Implement
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDeleteTextures(1, &_position_texture);
+	glDeleteTextures(1, &_normal_texture);
+	glDeleteTextures(1, &_color_texture);
+	glDeleteTextures(1, &_depth_texture);
+	glDeleteTextures(1, &_final_texture);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDeleteFramebuffers(1, &_fbo);
 }
 
 void ShadowVolume::LoadShaders(const Shader* geometry, const Shader* volume, const Shader* light)
@@ -94,9 +102,6 @@ void ShadowVolume::GeometryPassSetup()
 {
 	glViewport(0, 0, _window_w, _window_h);
 
-	// DEBUG:
-	glDisable(GL_DEPTH_CLAMP);
-
 	// Clear the previous states.
 	glStencilMask(0xFF);
 	glStencilFunc(GL_ALWAYS, 0x00, 0xFF);
@@ -119,15 +124,21 @@ void ShadowVolume::GeometryPassSetup()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	_geometry->Bind();
+}
 
-	// DEBUG:
+void ShadowVolume::DebugPassSetup(const Shader* debug)
+{
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, _depth_texture);
 
+	debug->Bind();
+	glUniform1i(glGetUniformLocation(debug->Get(), "textureUv"), 0);
 }
 
 void ShadowVolume::VolumePassSetup()
 {
-	/*
+	glBindFramebuffer(GL_FRAMEBUFFER, _fbo);	// Rebind custom fbo.
 	glDepthMask(GL_FALSE);		// Disable writing to Depth
 	glEnable(GL_DEPTH_CLAMP);	// Disable clipping of primitives that are too near & far. Instead clampem.
 	glDisable(GL_CULL_FACE);
@@ -137,13 +148,9 @@ void ShadowVolume::VolumePassSetup()
 	glStencilFunc(GL_ALWAYS, 0x00, 0xFF);
 	glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
 	glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
-	*/
+
 	glClear(GL_STENCIL_BUFFER);
 	_volume->Bind();
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glDisable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_CLAMP);
 }
 
 void ShadowVolume::LightPassSetup()
@@ -168,11 +175,12 @@ void ShadowVolume::LightPassSetup()
 	_light->Bind();
 }
 
-void ShadowVolume::BlitFBO()
-{	
+void ShadowVolume::CopyDrawnSceneToDefaultFBO()
+{
 	glStencilFunc(GL_ALWAYS, 0x00, 0xFF);
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glDrawBuffer(GL_BACK);
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, _fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT4);

@@ -8,7 +8,6 @@ void ShadowVolumeScene::Run() const
 {
     Camera eye;
     glm::vec3 eyePosition = glm::vec3(0.0f, 5.0f, 20.0f);
-    eyePosition = glm::vec3(10.0f, 15.0f, 10.0f);
     eye.SetViewMatrix(eyePosition, glm::vec3(0.0f), glm::vec3(0,1,0));
     eye.SetPerspectiveProjectionMatrix(45.0f, 4.0f/3.0f, 1.0f, 100.0f);
 
@@ -61,6 +60,14 @@ void ShadowVolumeScene::Run() const
         return;
     }
 
+    const char* volume_vertices_filepath = "vertices/volume_vertices.txt";
+    VertexAttribute volume_vertices = VertexAttributeParser::ProcessFile(volume_vertices_filepath);
+    if (volume_vertices.data.empty())
+    {
+        printf("[VertexAttribute] Volume vertices data empty!");
+        return;
+    }
+
     const char* volume_elements_filepath = "vertices/volume_elements.txt";
     VertexAttribute volume_elements = VertexAttributeParser::ProcessFile(volume_elements_filepath);
     if (volume_elements.data.empty())
@@ -97,12 +104,17 @@ void ShadowVolumeScene::Run() const
     //  texture for debugging purposes.
     Model canvas;
     canvas.PushVertexAttribute(rectangle_position, 0);
+    canvas.PushVertexAttribute(rectangle_uv, 1);
 
     Model volume;
-    volume.PushVertexAttribute(position, 0);
+    volume.PushVertexAttribute(volume_vertices, 0);
     volume.SetElementArrayBuffer(volume_elements);
 
     // Shaders.
+    const char* debugVertex = "shaders/shadow_volume/debug_rect.vs";
+    const char* debugFragment = "shaders/shadow_volume/debug_rect.fs";
+    Shader shaderDebug(debugVertex, debugFragment);
+
     const char* vertexGeometryFilepath = "shaders/shadow_volume/geometry.vs";
     const char* fragmentGeometryFilepath = "shaders/shadow_volume/geometry.fs";
     Shader shaderGeometry(vertexGeometryFilepath, fragmentGeometryFilepath);
@@ -137,54 +149,60 @@ void ShadowVolumeScene::Run() const
         lightMVP = eye.GetProjectionMatrix() * eye.GetViewMatrix() * kocka1Model;
         shadowVolume.SetMVP_Depth(lightMVP);
         shadowVolume.SetModel_Depth(kocka1Model);
-        volume.DrawVolume();
+        kocka1.Draw();
 
         lightMVP = eye.GetProjectionMatrix() * eye.GetViewMatrix() * kocka2Model;
         shadowVolume.SetMVP_Depth(lightMVP);
         shadowVolume.SetModel_Depth(kocka2Model);
         kocka2.Draw();
-/*
-        // Perform a volume pass.
-        shadowVolume.VolumePassSetup();
-        shadowVolume.SetLightPosition(lightPosition);
-        shadowVolume.SetView_Volume(eye.GetViewMatrix());
-        shadowVolume.SetProjection_Volume(eye.GetProjectionMatrix());
 
-        shadowVolume.SetModel_Volume(kocka1Model);
-        volume.DrawVolume();
-*/
-        //shadowVolume.SetModel_Volume(kocka2Model);
-        //volume.DrawVolume();
+        // Display the Depth texture for debugging purposes.
+        bool debug = false;
+        if (debug)
+        {
+            shadowVolume.DebugPassSetup(&shaderDebug);
+            canvas.Draw();
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+        else
+        {
+            // Perform a volume pass.
+            shadowVolume.VolumePassSetup();
+            shadowVolume.SetLightPosition(lightPosition);
+            shadowVolume.SetView_Volume(eye.GetViewMatrix());
+            shadowVolume.SetProjection_Volume(eye.GetProjectionMatrix());
 
-        // NOTE: Ovo sam zakomentiral jer imam opravdane sumnje
-        //  da se Volume kojeg stvara podloga mozda previse mjesa
-        //  u scenu i zato uzrokuje makar djelomicno krivije
-        //  rezultate. Kasnije provjeriti je li ta tvrdnja istinita.
-        //shadowVolume.SetModel_Volume(podlogaModel);
-        //volume.DrawVolume();
-/*
-        // Perform a lighting pass.
-        glm::vec3 ambientColor = glm::vec3(0.2f);
-        glm::vec3 diffuseColor = glm::vec3(0.8f);
+            shadowVolume.SetModel_Volume(kocka1Model);
+            volume.DrawVolume();
 
-        shadowVolume.LightPassSetup();
-        shadowVolume.SetGeometryTextures();
-        shadowVolume.SetPointLight(lightPosition, ambientColor, diffuseColor);
+            shadowVolume.SetModel_Volume(kocka2Model);
+            volume.DrawVolume();
 
-        glStencilFunc(GL_EQUAL, 0x00, 0xFF);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-        canvas.Draw();
+            shadowVolume.SetModel_Volume(podlogaModel);
+            volume.DrawVolume();
 
-        diffuseColor = glm::vec3(0.1f);
-        shadowVolume.SetPointLight(lightPosition, ambientColor, diffuseColor);
+            // Perform a lighting pass.
+            shadowVolume.LightPassSetup();
+            shadowVolume.SetGeometryTextures();
 
-        glStencilFunc(GL_NOTEQUAL, 0x00, 0xFF);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-        canvas.Draw();
+            glm::vec3 ambientColor = glm::vec3(0.2f);
+            glm::vec3 diffuseColor = glm::vec3(0.8f);
 
-        shadowVolume.BlitFBO();
-*/
+            // Draw the region of the Scene that is not in shadow.
+            shadowVolume.SetPointLight(lightPosition, ambientColor, diffuseColor);
+            glStencilFunc(GL_EQUAL, 0x00, 0xFF);
+            glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+            canvas.Draw();
+
+            // Draw the region of the Scene that is in shadow.
+            diffuseColor = glm::vec3(0.2f);
+            shadowVolume.SetPointLight(lightPosition, ambientColor, diffuseColor);
+            glStencilFunc(GL_NOTEQUAL, 0x00, 0xFF);
+            glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+            canvas.Draw();
+
+            shadowVolume.CopyDrawnSceneToDefaultFBO();
+        }
         _window->Draw();
     }
-
 }

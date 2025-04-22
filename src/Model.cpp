@@ -108,8 +108,8 @@ void Model::PushVertexAttribute(VertexAttribute& attribute, unsigned int locatio
 
 void Model::SetElementArrayBuffer(VertexAttribute& attribute)
 {
-	// Turn attribute into UNSIGNED INT, because it will not
-	//	work if left as FLOAT.
+	// Convert 'float' values into 'unsigned int' values for
+	//	GL_ELEMENT_ARRAY_BUFFER buffer to work properly.
 	GLuint indices[attribute.count];
 	for (size_t i=0; i<attribute.count; i++)
 	{
@@ -130,11 +130,13 @@ void Model::Draw() const
 	glBindVertexArray(0);
 }
 
-// TODO: Make it work with GL_TRIANGLES_ADJACENCY.
 void Model::DrawVolume() const
 {
 	glBindVertexArray(_vao);
-	glDrawElements(GL_TRIANGLES, _number_of_vertices, GL_UNSIGNED_INT, 0);
+	// TODO: This is very ugly. Make it better later.
+	//	'vertices_count' should equal '72' for cube shaped objects.
+	const GLsizei vertices_count = _number_of_vertices * 9;
+	glDrawElements(GL_TRIANGLES_ADJACENCY, vertices_count, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
 
@@ -151,7 +153,7 @@ void Model::SetScale(const glm::vec3& scaleVector)
 
 void Model::SetRotation(glm::vec3 vector, float angle)
 {
-	_rotation = glm::rotate(angle, vector);	// Za ovo treba 'GLM EXPERIMENTAL'
+	_rotation = glm::rotate(angle, vector);	// 'GLM EXPERIMENTAL'
 	RecalculateModelMatrix();
 
 }

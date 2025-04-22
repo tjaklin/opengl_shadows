@@ -35,6 +35,5 @@ void main(void)
    	vec3 normal_sampled = normalize(texture(texture_normal, texture_uv).xyz);
 
 	vec3 light = CalculatePointLight(position_sampled, normal_sampled);
-    //light = vec3(1.0f);
    	gl_FragColor = vec4(light, 1.0f);
 }
