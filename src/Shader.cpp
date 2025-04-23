@@ -5,18 +5,38 @@
 #include <cstring>
 
 Shader::Shader(const char* vertex_filepath, const char* fragment_filepath)
+    : Shader(vertex_filepath, nullptr, fragment_filepath)
+{
+    // Explicitly passing 'nullptr' to the overloaded constructor
+    //  which takes in a geometry shader.
+    // Check the overloaded constructor for an explanation.
+}
+
+Shader::Shader(const char* vertex_filepath, const char* geometry_filepath, const char* fragment_filepath)
     : _program(0)
 {
     // Vertex
     std::ifstream vertex_file(vertex_filepath);
     GLuint vertex = ParseAndCompile(ShaderType::VERTEX, vertex_file);
 
+    // Geometry. This type of shader is optional and will not be used
+    //  in all shader programs. If value of 'geometry_filepath' is
+    //  'nullptr', the intention of the method-caller is to not
+    //  use the geometry shader. This means that that no warning messages
+    //  will get shown for 'geometry_filepath' in that case.
+    GLuint geometry = 255;
+    if (geometry_filepath != nullptr)
+    {
+        std::ifstream geometry_file(geometry_filepath);
+        geometry = ParseAndCompile(ShaderType::GEOMETRY, geometry_file);
+    }
+
     // Fragment
     std::ifstream fragment_file(fragment_filepath);
     GLuint fragment = ParseAndCompile(ShaderType::FRAGMENT, fragment_file);
 
     // Link shaders into program
-    if (!Link(vertex, fragment))
+    if (!Link(vertex, geometry, fragment))
     {
         // If all went well, a valid shader program value is now present
         // in '_program' ! If not, return to prevent object construction (?)
@@ -42,10 +62,8 @@ GLuint Shader::Get() const
 
 GLuint Shader::ParseAndCompile(ShaderType type, std::ifstream& source_file)
 {
-    // TODO: Probaj ovo sa ISTREAM_ITERATORima napravit ko u knjigi !!
     if (!source_file.is_open())
     {
-        // TODO: Maybe print something out.
         return 255; // This is code for "Invalid Shader handle".
     }
 
@@ -56,7 +74,7 @@ GLuint Shader::ParseAndCompile(ShaderType type, std::ifstream& source_file)
     {
         shader_stream << source_line << '\n';
     }
-    // TODO: Change to something nicer.
+
     auto source_str = shader_stream.str();
     auto source_c = source_str.c_str();
     auto source_length = strlen(source_c);
@@ -78,26 +96,29 @@ GLuint Shader::ParseAndCompile(ShaderType type, std::ifstream& source_file)
         printf("[Shader] Compilation error detected. Info:\n%s", shader_info);
 
         glDeleteShader(shader);
-        // TODO: Change to something nicer.
         return 255; // This is code for "Invalid Shader handle".
     }
 
     return shader;
 }
 
-bool Shader::Link(GLuint vertex, GLuint fragment)
+bool Shader::Link(GLuint vertex, GLuint geometry, GLuint fragment)
 {
     // Check if any of the shaders have invalid values.
+    //  The geometry shader is allowed to have an invalid value ('255')
+    //  in case it will purposely not be used by the shader program.
     if (vertex == 255 || fragment == 255) // This is code for "Invalid Shader handle".
     {
         printf("[Shader] Linking failed. Shaders have invalid values.\n");
         glDeleteShader(vertex);
+        glDeleteShader(geometry);
         glDeleteShader(fragment);
         return false;
     }
 
     _program = glCreateProgram();
     glAttachShader(_program, vertex);
+    glAttachShader(_program, geometry);
     glAttachShader(_program, fragment);
     glLinkProgram(_program);
 
@@ -111,16 +132,22 @@ bool Shader::Link(GLuint vertex, GLuint fragment)
         glGetProgramInfoLog(_program, sizeof(program_info), &info_length, program_info);
         printf("[Shader] Program Linking error detected. Info:\n%s", program_info);
 
-        glDeleteProgram(_program);
+        glDetachShader(_program, vertex);
+        glDetachShader(_program, geometry);
+        glDetachShader(_program, fragment);
         glDeleteShader(vertex);
+        glDeleteShader(geometry);
         glDeleteShader(fragment);
+        glDeleteProgram(_program);
         return false;
     }
 
     // Detach and delete shaders
     glDetachShader(_program, vertex);
+    glDetachShader(_program, geometry);
     glDetachShader(_program, fragment);
     glDeleteShader(vertex);
+    glDeleteShader(geometry);
     glDeleteShader(fragment);
 
     return true;
