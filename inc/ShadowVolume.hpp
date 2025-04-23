@@ -1,9 +1,9 @@
 #pragma once
 
-#include "glm-lib/glm.hpp"
+#include "glm.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
-#include "glm-lib/gtx/transform.hpp"
+#include "gtx/transform.hpp"
 
 #include "Shader.hpp"
 

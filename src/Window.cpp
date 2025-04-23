@@ -1,4 +1,4 @@
-#include "../inc/Window.hpp"
+#include "Window.hpp"
 
 #include <cstdio>
 

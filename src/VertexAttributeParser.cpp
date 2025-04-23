@@ -1,4 +1,4 @@
-#include "../inc/VertexAttributeParser.hpp"
+#include "VertexAttributeParser.hpp"
 
 #include <fstream>
 #include <iterator>

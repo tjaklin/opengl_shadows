@@ -1,4 +1,4 @@
-#include "../inc/OmnidirectionalShadowMapScene.hpp"
+#include "OmnidirectionalShadowMapScene.hpp"
 
 OmnidirectionalShadowMapScene::OmnidirectionalShadowMapScene(Window* window)
     : Scene(window)
