@@ -12,7 +12,7 @@ public:
 	~OmnidirectionalShadowMap();
 
 	void FirstPassSetup();
-	//void DebugPassSetup();	// TODO: Add later !
+	//void DebugPassSetup();	// NOTE: Add later !
 	void SecondPassSetup();
 
 	void SetModelMatrix_Depth(glm::mat4 Model);

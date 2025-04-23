@@ -7,7 +7,6 @@ Window::Window(int width, int height, const char* title)
 {
     if (glfwInit() != GLFW_TRUE)
     {
-        // TODO: Shutdown.
         return;
     }
 

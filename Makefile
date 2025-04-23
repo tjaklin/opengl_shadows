@@ -53,7 +53,7 @@ obj/src/stb_image.o: src/stb_image.cpp Vendor/stb_image.h
 	mkdir -p obj/src/
 	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
 
-obj/src/DefaultScene.o: src/DefaultScene.cpp inc/DefaultScene.hpp inc/Scene.hpp Vendor/stb_image.h
+obj/src/DefaultScene.o: src/DefaultScene.cpp inc/DefaultScene.hpp inc/Scene.hpp
 	mkdir -p obj/src/
 	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
 

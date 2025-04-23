@@ -111,6 +111,10 @@ void OmnidirectionalShadowMapScene::Run() const
         shadowMap.SetModelMatrix_Light(podlogaModel);
         podloga.Draw();
 
+		// Draw the parent object's (Scene.cpp) 'PostDrawHook()'. It draws
+		//	a GUI on top of our scene.
+		PostDrawHook();
+
         _window->Draw();
     }
 }

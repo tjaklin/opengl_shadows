@@ -16,14 +16,15 @@ int main(int argc, char** argv)
 
     enum class ActiveScene
     {
-        DEFAULT = 0,
+        DEFAULT = 0,    // A simple scene with no shadows drawn.
         SHADOWMAP_DIRECTIONAL,
         SHADOWMAP_OMNIDIRECTIONAL,
         SHADOWMAP_VARIANCE,
-        SHADOWVOLUME
+        SHADOWVOLUME,
+        BAREBONES   // A 'skeleton' implementation. No OpenGL techniques here.
     };
 
-    switch (ActiveScene::DEFAULT)
+    switch (ActiveScene::SHADOWMAP_DIRECTIONAL)
     {
         case ActiveScene::DEFAULT:
             scene = new DefaultScene(&window);
@@ -39,6 +40,9 @@ int main(int argc, char** argv)
             break;
         case ActiveScene::SHADOWVOLUME:
             scene = new ShadowVolumeScene(&window);
+            break;
+        case ActiveScene::BAREBONES:
+            scene = new Scene(&window);
             break;
         default:
             printf("[ActiveScene] Incorrect choice.\n");
