@@ -2,7 +2,7 @@
 
 #include <cstdio>
 
-Window::Window(int width, int height, const char* title)
+Window::Window(const char* title)
     : _camera(nullptr)
 {
     if (glfwInit() != GLFW_TRUE)
@@ -14,6 +14,12 @@ Window::Window(int width, int height, const char* title)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    // Window dimensions are fixed for this demo program, as
+    //  some parts of the code's logic depend on the windows
+    //  size to be about this big.
+    const int width = 1024;
+    const int height = 1024;
 
     _window = glfwCreateWindow(width, height, title, nullptr, nullptr);
     if (!_window)

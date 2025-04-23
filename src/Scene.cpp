@@ -19,7 +19,7 @@ void Scene::Run() const
     // PreRunInitialization();
     //while (true)
     {
-        // Run's main loop. Draw stuf here.
+        // Run's main loop. Draw stuff here.
         // PostDrawHook();
     }
 }
@@ -63,7 +63,6 @@ void Scene::PostDrawHook() const
 	GLuint gui_texture;
 	if (guiImage)
 	{
-		printf("[guiImage] Loaded an image of dimensions %d, %d\n", width, height);
 		glGenTextures(1, &gui_texture);
 		glBindTexture(GL_TEXTURE_2D, gui_texture);
 
