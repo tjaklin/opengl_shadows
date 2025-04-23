@@ -1,11 +1,11 @@
 #pragma once
 
-#include <GL/glew.h>
-#include "glm-lib/glm.hpp"
-#include "glm-lib/gtc/matrix_transform.hpp"
+#include "GL/glew.h"
+#include "glm.hpp"
+#include "gtc/matrix_transform.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL			// Ovo i ovo ispod mi treba ako hocu koristiti
-#include "glm-lib/gtx/transform.hpp"	// 'glm::rotate(angle, vector);'. Procitat specku !
+#include "gtx/transform.hpp"			// 'glm::rotate(angle, vector);'. Procitat specku !
 
 #include "VertexAttributeParser.hpp"
 

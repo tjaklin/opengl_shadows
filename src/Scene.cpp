@@ -1,4 +1,4 @@
-#include "../inc/Scene.hpp"
+#include "Scene.hpp"
 #include "stb_image.h"
 
 #include <cstdio>

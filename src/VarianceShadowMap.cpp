@@ -1,4 +1,4 @@
-#include "../inc/VarianceShadowMap.hpp"
+#include "VarianceShadowMap.hpp"
 
 VarianceShadowMap::VarianceShadowMap(uint window_w, uint window_h, uint shadow_w, uint shadow_h, uint blur_w, uint blur_h)
     : _window_w(window_w), _window_h(window_h)

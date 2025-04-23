@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GL/glew.h>
+#include "GL/glew.h"
 #include <fstream>
 
 enum ShaderType { NONE = 0, VERTEX = GL_VERTEX_SHADER, GEOMETRY = GL_GEOMETRY_SHADER, FRAGMENT = GL_FRAGMENT_SHADER };

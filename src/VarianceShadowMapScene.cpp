@@ -1,4 +1,4 @@
-#include "../inc/VarianceShadowMapScene.hpp"
+#include "VarianceShadowMapScene.hpp"
 
 VarianceShadowMapScene::VarianceShadowMapScene(Window* window)
     : Scene(window)

@@ -1,4 +1,4 @@
-#include "../inc/OmnidirectionalShadowMap.hpp"
+#include "OmnidirectionalShadowMap.hpp"
 
 #include <cstdio>
 

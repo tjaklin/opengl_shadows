@@ -1,4 +1,4 @@
-#include "../inc/Camera.hpp"
+#include "Camera.hpp"
 
 void Camera::SetViewMatrix(glm::vec3 pos, glm::vec3 dir, glm::vec3 up)
 {

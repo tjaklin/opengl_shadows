@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "glm-lib/glm.hpp"
-#include "glm-lib/gtc/matrix_transform.hpp"
+#include "glm.hpp"
+#include "gtc/matrix_transform.hpp"
 
 struct Perspective
 {
