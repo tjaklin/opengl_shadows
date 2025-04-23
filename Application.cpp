@@ -11,7 +11,7 @@ int main(int argc, char** argv)
     // Ignore input data for now.
     (void) argc; (void) argv;
 
-    Window window(1024, 1024, "OpenGL shadowing techniques");
+    Window window("OpenGL shadowing techniques");
     Scene* scene = nullptr;
 
     enum class ActiveScene
