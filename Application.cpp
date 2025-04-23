@@ -1,10 +1,10 @@
-#include "inc/Window.hpp"
+#include "Window.hpp"
 
-#include "inc/DefaultScene.hpp"
-#include "inc/DirectionalShadowMapScene.hpp"
-#include "inc/OmnidirectionalShadowMapScene.hpp"
-#include "inc/VarianceShadowMapScene.hpp"
-#include "inc/ShadowVolumeScene.hpp"
+#include "DefaultScene.hpp"
+#include "DirectionalShadowMapScene.hpp"
+#include "OmnidirectionalShadowMapScene.hpp"
+#include "VarianceShadowMapScene.hpp"
+#include "ShadowVolumeScene.hpp"
 
 int main(int argc, char** argv)
 {

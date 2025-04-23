@@ -1,6 +1,6 @@
 .vscode/
 bin/
 obj/
+build/
 opengl_shadows.code-workspace
-popis_stvari.txt
-compilation_log.txt
+Sjene

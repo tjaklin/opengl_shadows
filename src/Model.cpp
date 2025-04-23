@@ -1,4 +1,4 @@
-#include "../inc/Model.hpp"
+#include "Model.hpp"
 
 #include <cstdio>
 

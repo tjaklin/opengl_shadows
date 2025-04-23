@@ -1,4 +1,4 @@
-#include "../inc/DirectionalShadowMapScene.hpp"
+#include "DirectionalShadowMapScene.hpp"
 
 DirectionalShadowMapScene::DirectionalShadowMapScene(Window* window)
     : Scene(window)

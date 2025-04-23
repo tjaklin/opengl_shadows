@@ -1,4 +1,4 @@
-#include "../inc/ShadowVolumeScene.hpp"
+#include "ShadowVolumeScene.hpp"
 
 ShadowVolumeScene::ShadowVolumeScene(Window* window)
     : Scene(window)

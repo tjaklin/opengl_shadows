@@ -1,4 +1,4 @@
-#include "../inc/DefaultScene.hpp"
+#include "DefaultScene.hpp"
 
 DefaultScene::DefaultScene(Window* window)
     : Scene(window)
