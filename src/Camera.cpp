@@ -31,7 +31,6 @@ void Camera::SetOrthogonalProjectionMatrix(int left, int right, int bottom, int 
 	_projection = glm::ortho<float>(left, right, bottom, top, near, far);
 }
 
-// TODO: Currently not in used. Will be used inside of 'Omnidirectional Shadow Map' implementation.
 void Camera::SetViewAndProjectionMatrix(glm::vec3 pos)
 {
 	_view_and_projection.clear();

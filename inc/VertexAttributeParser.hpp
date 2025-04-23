@@ -12,7 +12,7 @@ struct VertexAttribute
                                 //  Attribute, dimension would be 2).
     unsigned int count;         // Count of elements (floats) in the 'data' object.
                                 // NOTE: Currently, every Vertex Attribute is assumed
-                                //  to be composed of float values.
+                                //  to be composed of 'float' values.
 };
 
 // An entity that defines the accompanying values

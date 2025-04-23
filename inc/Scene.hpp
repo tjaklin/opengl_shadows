@@ -11,7 +11,9 @@ public:
     Scene(Window* window);
     virtual ~Scene() = default;
 
+    virtual void PreRunInitialization() const;
     virtual void Run() const;
+    virtual void PostDrawHook() const;
 
 protected:
     Window* _window;

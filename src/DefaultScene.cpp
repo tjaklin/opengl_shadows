@@ -9,7 +9,7 @@ void DefaultScene::Run() const
 {
     // Prepare the scene's camera object.
 	Camera eye;
-	glm::vec3 eyePosition = glm::vec3(-16.6f, 15.4f, 9.2f);
+	glm::vec3 eyePosition = glm::vec3(-16.6f, 10.4f, 9.2f);
 	eye.SetViewMatrix(eyePosition, glm::vec3(0.0f), glm::vec3(0,1,0));
 	eye.SetPerspectiveProjectionMatrix(45.0f, 4.0f/3.0f, 1.0f, 100.0f);
 	
@@ -22,9 +22,7 @@ void DefaultScene::Run() const
 	VertexAttribute position = VertexAttributeParser::ProcessFile(cube_position_filepath);
 	if (position.data.empty())
     {
-        // TODO: Think about changing this to use exceptions, instead
-        //  of simply returning.
-        printf("VertexAttribute is empty. Exiting.\n");
+        printf("VertexAttribute 'position' is empty. Exiting.\n");
         return;
     }
 	
@@ -32,7 +30,7 @@ void DefaultScene::Run() const
 	VertexAttribute color = VertexAttributeParser::ProcessFile(cube_color_filepath);
 	if (color.data.empty())
     {
-        printf("VertexAttribute is empty. Exiting.\n");
+        printf("VertexAttribute 'color' is empty. Exiting.\n");
         return;
     }
 
@@ -41,16 +39,19 @@ void DefaultScene::Run() const
 	Model kocka;
 	kocka.PushVertexAttribute(position, 0);
 	kocka.PushVertexAttribute(color, 1);
-	kocka.SetScale(glm::vec3(1.0f));
-	kocka.SetTranslation(glm::vec3(-3.0f, 3.0f,-1.0f));
 	auto kockaModel = kocka.GetModelMatrix();
+
+	Model podloga;
+	podloga.PushVertexAttribute(position, 0);
+	podloga.PushVertexAttribute(color, 1);
+	podloga.SetScale(glm::vec3(10.0f, 0.5f, 10.0f));
+	podloga.SetTranslation(glm::vec3(0.0f, -5.0f, 0.0f));
+	auto podlogaModel = podloga.GetModelMatrix();
 
 	// Prepare shader data.
 	const char* vertexShaderFilepath = "shaders/default.vs";
 	const char* fragmentShaderFilepath = "shaders/default.fs";
 	Shader defaultShader(vertexShaderFilepath, fragmentShaderFilepath);
-	defaultShader.Bind();
-	auto shader = defaultShader.Get();
 
     // Main update and draw loop.
     while (!_window->ShouldClose())
@@ -62,12 +63,21 @@ void DefaultScene::Run() const
 		auto eyeProjection = eye.GetProjectionMatrix();
 
 		// Forward View and Projection matrix data to the shader.
-		glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE, &eyeView[0][0]);
-		glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, &eyeProjection[0][0]);
+		defaultShader.Bind();
+
+		glUniformMatrix4fv(glGetUniformLocation(defaultShader.Get(), "view"), 1, GL_FALSE, &eyeView[0][0]);
+		glUniformMatrix4fv(glGetUniformLocation(defaultShader.Get(), "projection"), 1, GL_FALSE, &eyeProjection[0][0]);
 
 		// Position and draw the object.
-		glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &kockaModel[0][0]);
-		kocka.Draw();	
+		glUniformMatrix4fv(glGetUniformLocation(defaultShader.Get(), "model"), 1, GL_FALSE, &podlogaModel[0][0]);
+		podloga.Draw();
+
+		glUniformMatrix4fv(glGetUniformLocation(defaultShader.Get(), "model"), 1, GL_FALSE, &kockaModel[0][0]);
+		kocka.Draw();
+
+		// Draw the parent object's (Scene.cpp) 'PostDrawHook()'. It draws
+		//	a GUI on top of our scene.
+		PostDrawHook();
 
 		// Display Window's framebuffer.
         _window->Draw();

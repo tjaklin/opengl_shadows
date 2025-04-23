@@ -63,7 +63,7 @@ void DirectionalShadowMapScene::Run() const
 	kocka1.PushVertexAttribute(position, 0);
 	kocka1.PushVertexAttribute(normal, 1);
     auto kocka1Model = kocka1.GetModelMatrix();
-    // Don't perform any Model matrix manipulation for 'kocka1' yet.
+    // Don't perform any Model matrix manipulation for 'kocka1'.
 
     Model kocka2;
     kocka2.PushVertexAttribute(position, 0);
@@ -177,6 +177,11 @@ void DirectionalShadowMapScene::Run() const
             shadowMap.SetLightMvpMatrix(light_vp_matrix * podlogaModel);
             podloga.Draw();
         }
+
+		// Draw the parent object's (Scene.cpp) 'PostDrawHook()'. It draws
+		//	a GUI on top of our scene.
+		PostDrawHook();
+
         _window->Draw();
     }
 }

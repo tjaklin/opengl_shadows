@@ -10,7 +10,7 @@ FILES_SOURCE =Application.cpp src/Window.cpp src/Camera.cpp \
 	src/DirectionalShadowMap.cpp src/OmnidirectionalShadowMapScene.cpp \
 	src/OmnidirectionalShadowMap.cpp src/VarianceShadowMapScene.cpp \
 	src/VarianceShadowMap.cpp src/ShadowVolumeScene.cpp \
-	src/ShadowVolume.cpp
+	src/ShadowVolume.cpp src/stb_image.cpp
 
 #FILES_HEADER =???
 
@@ -46,6 +46,10 @@ obj/src/Shader.o: src/Shader.cpp inc/Shader.hpp
 
 obj/src/Scene.o: src/Scene.cpp inc/Scene.hpp inc/Window.hpp inc/Model.hpp \
 	inc/VertexAttributeParser.hpp inc/Shader.hpp
+	mkdir -p obj/src/
+	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
+
+obj/src/stb_image.o: src/stb_image.cpp Vendor/stb_image.h
 	mkdir -p obj/src/
 	$(COMPILER) -c $< $(FLAGS_COMPILER) -o $@
 

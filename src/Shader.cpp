@@ -62,7 +62,6 @@ GLuint Shader::Get() const
 
 GLuint Shader::ParseAndCompile(ShaderType type, std::ifstream& source_file)
 {
-    // TODO: Probaj ovo sa 'istream_iterator' rjesit, ko u knjigi!
     if (!source_file.is_open())
     {
         return 255; // This is code for "Invalid Shader handle".

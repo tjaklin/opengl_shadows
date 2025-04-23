@@ -203,6 +203,11 @@ void ShadowVolumeScene::Run() const
 
             shadowVolume.CopyDrawnSceneToDefaultFBO();
         }
+
+		// Draw the parent object's (Scene.cpp) 'PostDrawHook()'. It draws
+		//	a GUI on top of our scene.
+		PostDrawHook();
+
         _window->Draw();
     }
 }
