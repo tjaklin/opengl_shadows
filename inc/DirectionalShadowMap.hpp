@@ -10,7 +10,8 @@
 class DirectionalShadowMap
 {
 public:
-	DirectionalShadowMap(uint shadow_W, uint shadow_H, uint window_W, uint window_H);
+	DirectionalShadowMap(unsigned int shadow_W, unsigned int shadow_H,
+		unsigned int window_W, unsigned int window_H);
 	~DirectionalShadowMap();
 	
 	void LoadShaders(const Shader* depth, const Shader* light);
@@ -28,8 +29,8 @@ public:
 	void SetLightMvpMatrix(glm::mat4 mvp);
 
 private:
-	uint _shadow_width, _shadow_height;
-	uint _window_width, _window_height;
+	unsigned int _shadow_width, _shadow_height;
+	unsigned int _window_width, _window_height;
 
 	GLuint _fbo = 255;	// '255' means invalid value.
 	GLuint _depth_texture = 255;	// '255' means invalid value.

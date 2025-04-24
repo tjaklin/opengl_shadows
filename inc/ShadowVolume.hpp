@@ -10,7 +10,8 @@
 class ShadowVolume
 {
 public:
-	ShadowVolume(uint window_w, uint window_h, uint shadow_w, uint shadow_h);
+	ShadowVolume(unsigned int window_w, unsigned int window_h,
+		unsigned int shadow_w, unsigned int shadow_h);
 	~ShadowVolume();
 
 	void LoadShaders(const Shader* geometry, const Shader* volume, const Shader* light);

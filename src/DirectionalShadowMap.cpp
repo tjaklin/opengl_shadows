@@ -2,8 +2,8 @@
 
 #include <cstdio>
 
-DirectionalShadowMap::DirectionalShadowMap(uint shadow_w, uint shadow_h, uint window_w,
-	uint window_h)
+DirectionalShadowMap::DirectionalShadowMap(unsigned int shadow_w, unsigned int shadow_h,
+	unsigned int window_w, unsigned int window_h)
 	: _shadow_width(shadow_w), _shadow_height(shadow_h)
 	, _window_width(window_w), _window_height(window_h)
 {

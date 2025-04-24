@@ -12,7 +12,9 @@ enum BlurPassType { X = 1, Y = 0 };
 class VarianceShadowMap
 {
 public:
-    VarianceShadowMap(uint window_w, uint window_h, uint shadow_w, uint shadow_h, uint blur_w, uint blur_h);
+    VarianceShadowMap(unsigned int window_w, unsigned int window_h,
+        unsigned int shadow_w, unsigned int shadow_h,
+        unsigned int blur_w, unsigned int blur_h);
     ~VarianceShadowMap();
 
     void FirstPassSetup();
