@@ -4,8 +4,8 @@
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
 
-#define GLM_ENABLE_EXPERIMENTAL			// Ovo i ovo ispod mi treba ako hocu koristiti
-#include "gtx/transform.hpp"			// 'glm::rotate(angle, vector);'. Procitat specku !
+#define GLM_ENABLE_EXPERIMENTAL		// NOTE: Necessary 'glm::rotate(angle, vector);'.
+#include "gtx/transform.hpp"
 
 #include "VertexAttributeParser.hpp"
 

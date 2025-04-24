@@ -1,7 +1,9 @@
 #include "ShadowVolume.hpp"
 
-ShadowVolume::ShadowVolume(uint window_w, uint window_h, uint shadow_w, uint shadow_h)
-	: _window_w(window_w), _window_h(window_h), _shadow_w(shadow_w), _shadow_h(shadow_h)
+ShadowVolume::ShadowVolume(unsigned int window_w, unsigned int window_h,
+	unsigned int shadow_w, unsigned int shadow_h)
+	: _window_w(window_w), _window_h(window_h)
+	, _shadow_w(shadow_w), _shadow_h(shadow_h)
 {
 	// NOTE: Start using '_shadow_w/h' or delete them!
 	(void) _shadow_w; (void) _shadow_h;

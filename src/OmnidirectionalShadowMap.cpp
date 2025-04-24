@@ -1,8 +1,10 @@
 #include "OmnidirectionalShadowMap.hpp"
 
 #include <cstdio>
+#include <string>
 
-OmnidirectionalShadowMap::OmnidirectionalShadowMap(int shadow_W, int shadow_H, int window_W, int window_H)
+OmnidirectionalShadowMap::OmnidirectionalShadowMap(unsigned int shadow_W, unsigned int shadow_H,
+	unsigned int window_W, unsigned int window_H)
 	: _shadow_width(shadow_W), _shadow_height(shadow_H)
 	, _window_width(window_W), _window_height(window_H)
 {

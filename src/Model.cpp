@@ -91,10 +91,10 @@ void Model::PushVertexAttribute(VertexAttribute& attribute, unsigned int locatio
 	// Set up all the VertexAttribPointers necessary.
 	for (auto& layout : _attribute_layouts)
 	{
-		uint index = layout.location;
-		uint size = layout.attribute.dimension;
-		uint stride = layout.stride;
-		uint offset = layout.offset;
+		unsigned int index = layout.location;
+		unsigned int size = layout.attribute.dimension;
+		unsigned int stride = layout.stride;
+		unsigned int offset = layout.offset;
 
 		glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (const void*) offset);
 		glEnableVertexAttribArray(index);
@@ -110,16 +110,16 @@ void Model::SetElementArrayBuffer(VertexAttribute& attribute)
 {
 	// Convert 'float' values into 'unsigned int' values for
 	//	GL_ELEMENT_ARRAY_BUFFER buffer to work properly.
-	GLuint indices[attribute.count];
+	std::vector<GLuint> indices;
 	for (size_t i=0; i<attribute.count; i++)
 	{
-		indices[i] = attribute.data.at(i);
+		indices.push_back(attribute.data.at(i));
 	}
 
 	glBindVertexArray(_vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, attribute.count * sizeof(unsigned int),
-		indices, GL_STATIC_DRAW);
+		indices.data(), GL_STATIC_DRAW);
 	glBindVertexArray(0);
 }
 
