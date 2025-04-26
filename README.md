@@ -3,6 +3,7 @@ The program implements some of the most widely used techniques for calculating a
 in computer graphics. The user starts out with the 'Directional Shadow maps' technique, but the choice
 **can be changed** in the Application.cpp's **main function**.
 >Make sure to clone the repo with **-\-recursive** to download all the necessary submodules.
+>If building on a Linux platform, additional dependencies might be needer for GLFW to compile correctly. Please refer to [this](https://www.glfw.org/docs/latest/compile_guide.html#compile_deps) for more information.
 
 ## Implemented techniques:
 - Directional shadow maps
