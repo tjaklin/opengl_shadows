@@ -1,4 +1,4 @@
-#include "ShadowVolume.hpp"
+#include "../include/ShadowVolume.hpp"
 
 ShadowVolume::ShadowVolume(unsigned int window_w, unsigned int window_h,
 	unsigned int shadow_w, unsigned int shadow_h)

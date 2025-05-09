@@ -1,4 +1,4 @@
-#include "DirectionalShadowMap.hpp"
+#include "../include/DirectionalShadowMap.hpp"
 
 #include <cstdio>
 

@@ -1,4 +1,4 @@
-#include "VarianceShadowMapScene.hpp"
+#include "../include/VarianceShadowMapScene.hpp"
 
 VarianceShadowMapScene::VarianceShadowMapScene(Window* window)
     : Scene(window)
@@ -25,7 +25,7 @@ void VarianceShadowMapScene::Run() const
 	_window->SetCamera(&eye);
 
     // Prepare 3D shape data.
-	const char* cube_position_filepath = "vertices/cube_position.txt";
+	const char* cube_position_filepath = "Vertices/cube_position.txt";
 	VertexAttribute position = VertexAttributeParser::ProcessFile(cube_position_filepath);
 	if (position.data.empty())
     {
@@ -33,7 +33,7 @@ void VarianceShadowMapScene::Run() const
         return;
     }
 	
-	const char* cube_normal_filepath = "vertices/cube_normal.txt";
+	const char* cube_normal_filepath = "Vertices/cube_normal.txt";
 	VertexAttribute normal = VertexAttributeParser::ProcessFile(cube_normal_filepath);
 	if (normal.data.empty())
     {
@@ -42,7 +42,7 @@ void VarianceShadowMapScene::Run() const
     }
 
     // Prepare 2D shape data (For rectangle drawing).
-    const char* rectangle_position_filepath = "vertices/rectangle_position.txt";
+    const char* rectangle_position_filepath = "Vertices/rectangle_position.txt";
     VertexAttribute rectangle_position = VertexAttributeParser::ProcessFile(rectangle_position_filepath);
     if (rectangle_position.data.empty())
     {
@@ -50,7 +50,7 @@ void VarianceShadowMapScene::Run() const
         return;
     }
 
-    const char* rectangle_normal_filepath = "vertices/rectangle_normal.txt";
+    const char* rectangle_normal_filepath = "Vertices/rectangle_normal.txt";
     VertexAttribute rectangle_normal = VertexAttributeParser::ProcessFile(rectangle_normal_filepath);
     if (rectangle_normal.data.empty())
     {
@@ -58,7 +58,7 @@ void VarianceShadowMapScene::Run() const
         return;
     }
 
-    const char* rectangle_uv_filepath = "vertices/rectangle_uv.txt";
+    const char* rectangle_uv_filepath = "Vertices/rectangle_uv.txt";
     VertexAttribute rectangle_uv = VertexAttributeParser::ProcessFile(rectangle_uv_filepath);
     if (rectangle_uv.data.empty())
     {
@@ -98,21 +98,21 @@ void VarianceShadowMapScene::Run() const
     canvas.PushVertexAttribute(rectangle_uv, 2);
 
 	// Prepare Variance Shadow Map shader data.
-	const char* vertexShadowMapDepthFilepath = "shaders/shadow_map/variance/depth.vs";
-	const char* fragmentShadowMapDepthFilepath = "shaders/shadow_map/variance/depth.fs";
+	const char* vertexShadowMapDepthFilepath = "Shaders/shadow_map/variance/depth.vs";
+	const char* fragmentShadowMapDepthFilepath = "Shaders/shadow_map/variance/depth.fs";
 	Shader shadowMapDepth(vertexShadowMapDepthFilepath, fragmentShadowMapDepthFilepath);
 
-	const char* vertexShadowMapBlurFilepath = "shaders/shadow_map/variance/blur.vs";
-	const char* fragmentShadowMapBlurFilepath = "shaders/shadow_map/variance/blur.fs";
+	const char* vertexShadowMapBlurFilepath = "Shaders/shadow_map/variance/blur.vs";
+	const char* fragmentShadowMapBlurFilepath = "Shaders/shadow_map/variance/blur.fs";
 	Shader shadowMapBlur(vertexShadowMapBlurFilepath, fragmentShadowMapBlurFilepath);
 
-	const char* vertexShadowMapLightFilepath = "shaders/shadow_map/variance/light.vs";
-	const char* fragmentShadowMapLightFilepath = "shaders/shadow_map/variance/light.fs";
+	const char* vertexShadowMapLightFilepath = "Shaders/shadow_map/variance/light.vs";
+	const char* fragmentShadowMapLightFilepath = "Shaders/shadow_map/variance/light.fs";
 	Shader shadowMapLight(vertexShadowMapLightFilepath, fragmentShadowMapLightFilepath);
 
     // Prepare default shader for 2D rectangle debugging.
-    const char* vertexDebugFilepath = "shaders/shadow_map/variance/debug_rect.vs";
-    const char* fragmentDebugFilepath = "shaders/shadow_map/variance/debug_rect.fs";
+    const char* vertexDebugFilepath = "Shaders/shadow_map/variance/debug_rect.vs";
+    const char* fragmentDebugFilepath = "Shaders/shadow_map/variance/debug_rect.fs";
     Shader debugShader(vertexDebugFilepath, fragmentDebugFilepath);
 
 	// Set up the Variance Shadow Map object.

@@ -1,4 +1,4 @@
-#include "ShadowVolumeScene.hpp"
+#include "../include/ShadowVolumeScene.hpp"
 
 ShadowVolumeScene::ShadowVolumeScene(Window* window)
     : Scene(window)
@@ -19,7 +19,7 @@ void ShadowVolumeScene::Run() const
     _window->SetCamera(&eye);
 
     // Prepare 3D shape data.
-	const char* cube_position_filepath = "vertices/cube_position.txt";
+	const char* cube_position_filepath = "Vertices/cube_position.txt";
 	VertexAttribute position = VertexAttributeParser::ProcessFile(cube_position_filepath);
 	if (position.data.empty())
     {
@@ -27,7 +27,7 @@ void ShadowVolumeScene::Run() const
         return;
     }
 	
-	const char* cube_normal_filepath = "vertices/cube_normal.txt";
+	const char* cube_normal_filepath = "Vertices/cube_normal.txt";
 	VertexAttribute normal = VertexAttributeParser::ProcessFile(cube_normal_filepath);
 	if (normal.data.empty())
     {
@@ -36,7 +36,7 @@ void ShadowVolumeScene::Run() const
     }
 
     // Prepare 2D shape data (For rectangle drawing).
-    const char* rectangle_position_filepath = "vertices/rectangle_position.txt";
+    const char* rectangle_position_filepath = "Vertices/rectangle_position.txt";
     VertexAttribute rectangle_position = VertexAttributeParser::ProcessFile(rectangle_position_filepath);
     if (rectangle_position.data.empty())
     {
@@ -44,7 +44,7 @@ void ShadowVolumeScene::Run() const
         return;
     }
 
-    const char* rectangle_normal_filepath = "vertices/rectangle_normal.txt";
+    const char* rectangle_normal_filepath = "Vertices/rectangle_normal.txt";
     VertexAttribute rectangle_normal = VertexAttributeParser::ProcessFile(rectangle_normal_filepath);
     if (rectangle_normal.data.empty())
     {
@@ -52,7 +52,7 @@ void ShadowVolumeScene::Run() const
         return;
     }
 
-    const char* rectangle_uv_filepath = "vertices/rectangle_uv.txt";
+    const char* rectangle_uv_filepath = "Vertices/rectangle_uv.txt";
     VertexAttribute rectangle_uv = VertexAttributeParser::ProcessFile(rectangle_uv_filepath);
     if (rectangle_uv.data.empty())
     {
@@ -60,7 +60,7 @@ void ShadowVolumeScene::Run() const
         return;
     }
 
-    const char* volume_vertices_filepath = "vertices/volume_vertices.txt";
+    const char* volume_vertices_filepath = "Vertices/volume_vertices.txt";
     VertexAttribute volume_vertices = VertexAttributeParser::ProcessFile(volume_vertices_filepath);
     if (volume_vertices.data.empty())
     {
@@ -68,7 +68,7 @@ void ShadowVolumeScene::Run() const
         return;
     }
 
-    const char* volume_elements_filepath = "vertices/volume_elements.txt";
+    const char* volume_elements_filepath = "Vertices/volume_elements.txt";
     VertexAttribute volume_elements = VertexAttributeParser::ProcessFile(volume_elements_filepath);
     if (volume_elements.data.empty())
     {
@@ -111,21 +111,21 @@ void ShadowVolumeScene::Run() const
     volume.SetElementArrayBuffer(volume_elements);
 
     // Shaders.
-    const char* debugVertex = "shaders/shadow_volume/debug_rect.vs";
-    const char* debugFragment = "shaders/shadow_volume/debug_rect.fs";
+    const char* debugVertex = "Shaders/shadow_volume/debug_rect.vs";
+    const char* debugFragment = "Shaders/shadow_volume/debug_rect.fs";
     Shader shaderDebug(debugVertex, debugFragment);
 
-    const char* vertexGeometryFilepath = "shaders/shadow_volume/geometry.vs";
-    const char* fragmentGeometryFilepath = "shaders/shadow_volume/geometry.fs";
+    const char* vertexGeometryFilepath = "Shaders/shadow_volume/geometry.vs";
+    const char* fragmentGeometryFilepath = "Shaders/shadow_volume/geometry.fs";
     Shader shaderGeometry(vertexGeometryFilepath, fragmentGeometryFilepath);
 
-    const char* vertexVolumeFilepath = "shaders/shadow_volume/volume.vs";
-    const char* geometryVolumeFilepath = "shaders/shadow_volume/volume.gs";
-    const char* fragmentVolumeFilepath = "shaders/shadow_volume/volume.fs";
+    const char* vertexVolumeFilepath = "Shaders/shadow_volume/volume.vs";
+    const char* geometryVolumeFilepath = "Shaders/shadow_volume/volume.gs";
+    const char* fragmentVolumeFilepath = "Shaders/shadow_volume/volume.fs";
     Shader shaderVolume(vertexVolumeFilepath, geometryVolumeFilepath, fragmentVolumeFilepath);
 
-    const char* vertexLightFilepath = "shaders/shadow_volume/light.vs";
-    const char* fragmentLightFilepath = "shaders/shadow_volume/light.fs";
+    const char* vertexLightFilepath = "Shaders/shadow_volume/light.vs";
+    const char* fragmentLightFilepath = "Shaders/shadow_volume/light.fs";
     Shader shaderLight(vertexLightFilepath, fragmentLightFilepath);
 
     ShadowVolume shadowVolume = ShadowVolume(1024, 1024, 1024, 1024);

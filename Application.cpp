@@ -21,7 +21,7 @@ int main(int argc, char** argv)
         SHADOWMAP_OMNIDIRECTIONAL,
         SHADOWMAP_VARIANCE,
         SHADOWVOLUME,
-        BAREBONES   // A 'skeleton' implementation. No OpenGL techniques here.
+        BAREBONES       // A 'skeleton' implementation. No OpenGL techniques here.
     };
 
     switch (ActiveScene::SHADOWMAP_DIRECTIONAL)

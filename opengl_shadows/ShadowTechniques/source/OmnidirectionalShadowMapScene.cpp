@@ -1,4 +1,4 @@
-#include "OmnidirectionalShadowMapScene.hpp"
+#include "../include/OmnidirectionalShadowMapScene.hpp"
 
 OmnidirectionalShadowMapScene::OmnidirectionalShadowMapScene(Window* window)
     : Scene(window)
@@ -18,7 +18,7 @@ void OmnidirectionalShadowMapScene::Run() const
 
     _window->SetCamera(&eye);
 
-    const char* cube_position_filepath = "vertices/cube_position.txt";
+    const char* cube_position_filepath = "Vertices/cube_position.txt";
     VertexAttribute position = VertexAttributeParser::ProcessFile(cube_position_filepath);
     if (position.data.empty())
     {
@@ -27,7 +27,7 @@ void OmnidirectionalShadowMapScene::Run() const
         return;
     }
     
-    const char* cube_normal_filepath = "vertices/cube_normal.txt";
+    const char* cube_normal_filepath = "Vertices/cube_normal.txt";
     VertexAttribute normal = VertexAttributeParser::ProcessFile(cube_normal_filepath);
     if (normal.data.empty())
     {
@@ -56,13 +56,13 @@ void OmnidirectionalShadowMapScene::Run() const
     auto podlogaModel = podloga.GetModelMatrix();
 
     // Shaders; both depth and light.
-    const char* vertexDepthFilepath = "shaders/shadow_map/omnidirectional/depth.vs";
-    const char* geometryDepthFilepath = "shaders/shadow_map/omnidirectional/depth.gs";
-    const char* fragmentDepthFilepath = "shaders/shadow_map/omnidirectional/depth.fs";
+    const char* vertexDepthFilepath = "Shaders/shadow_map/omnidirectional/depth.vs";
+    const char* geometryDepthFilepath = "Shaders/shadow_map/omnidirectional/depth.gs";
+    const char* fragmentDepthFilepath = "Shaders/shadow_map/omnidirectional/depth.fs";
     Shader depthShader(vertexDepthFilepath, geometryDepthFilepath, fragmentDepthFilepath);
 
-    const char* vertexLightFilepath = "shaders/shadow_map/omnidirectional/light.vs";
-    const char* fragmentLightFilepath = "shaders/shadow_map/omnidirectional/light.fs";
+    const char* vertexLightFilepath = "Shaders/shadow_map/omnidirectional/light.vs";
+    const char* fragmentLightFilepath = "Shaders/shadow_map/omnidirectional/light.fs";
     Shader lightShader(vertexLightFilepath, fragmentLightFilepath);
 
     // TODO: Add support for 'OmnidirectionalShadowMapp::DebugPassSetup()' and

@@ -1,4 +1,4 @@
-#include "DefaultScene.hpp"
+#include "../include/DefaultScene.hpp"
 
 DefaultScene::DefaultScene(Window* window)
     : Scene(window)
@@ -18,7 +18,7 @@ void DefaultScene::Run() const
 	_window->SetCamera(&eye);
 	
 	// Prepare 3D shape data.
-	const char* cube_position_filepath = "vertices/cube_position.txt";
+	const char* cube_position_filepath = "Vertices/cube_position.txt";
 	VertexAttribute position = VertexAttributeParser::ProcessFile(cube_position_filepath);
 	if (position.data.empty())
     {
@@ -26,7 +26,7 @@ void DefaultScene::Run() const
         return;
     }
 	
-	const char* cube_color_filepath = "vertices/cube_color.txt";
+	const char* cube_color_filepath = "Vertices/cube_color.txt";
 	VertexAttribute color = VertexAttributeParser::ProcessFile(cube_color_filepath);
 	if (color.data.empty())
     {
@@ -49,8 +49,8 @@ void DefaultScene::Run() const
 	auto podlogaModel = podloga.GetModelMatrix();
 
 	// Prepare shader data.
-	const char* vertexShaderFilepath = "shaders/default.vs";
-	const char* fragmentShaderFilepath = "shaders/default.fs";
+	const char* vertexShaderFilepath = "Shaders/default.vs";
+	const char* fragmentShaderFilepath = "Shaders/default.fs";
 	Shader defaultShader(vertexShaderFilepath, fragmentShaderFilepath);
 
     // Main update and draw loop.

@@ -1,4 +1,4 @@
-#include "DirectionalShadowMapScene.hpp"
+#include "../include/DirectionalShadowMapScene.hpp"
 
 DirectionalShadowMapScene::DirectionalShadowMapScene(Window* window)
     : Scene(window)
@@ -24,7 +24,7 @@ void DirectionalShadowMapScene::Run() const
 	_window->SetCamera(&eye);
 
     // Prepare 3D shape data.
-	const char* cube_position_filepath = "vertices/cube_position.txt";
+	const char* cube_position_filepath = "Vertices/cube_position.txt";
 	VertexAttribute position = VertexAttributeParser::ProcessFile(cube_position_filepath);
 	if (position.data.empty())
     {
@@ -32,7 +32,7 @@ void DirectionalShadowMapScene::Run() const
         return;
     }
 	
-	const char* cube_normal_filepath = "vertices/cube_normal.txt";
+	const char* cube_normal_filepath = "Vertices/cube_normal.txt";
 	VertexAttribute normal = VertexAttributeParser::ProcessFile(cube_normal_filepath);
 	if (normal.data.empty())
     {
@@ -41,7 +41,7 @@ void DirectionalShadowMapScene::Run() const
     }
 
     // Prepare 2D shape data (For rectangle drawing).
-    const char* rectangle_position_filepath = "vertices/rectangle_position.txt";
+    const char* rectangle_position_filepath = "Vertices/rectangle_position.txt";
     VertexAttribute rectangle_position = VertexAttributeParser::ProcessFile(rectangle_position_filepath);
     if (rectangle_position.data.empty())
     {
@@ -49,7 +49,7 @@ void DirectionalShadowMapScene::Run() const
         return;
     }
 
-    const char* rectangle_uv_filepath = "vertices/rectangle_uv.txt";
+    const char* rectangle_uv_filepath = "Vertices/rectangle_uv.txt";
     VertexAttribute rectangle_uv = VertexAttributeParser::ProcessFile(rectangle_uv_filepath);
     if (rectangle_uv.data.empty())
     {
@@ -88,17 +88,17 @@ void DirectionalShadowMapScene::Run() const
     canvas.PushVertexAttribute(rectangle_uv, 1);
 
 	// Prepare Directional Shadow Map shader data.
-	const char* vertexShadowMapDepthFilepath = "shaders/shadow_map/directional/depth.vs";
-	const char* fragmentShadowMapDepthFilepath = "shaders/shadow_map/directional/depth.fs";
+	const char* vertexShadowMapDepthFilepath = "Shaders/shadow_map/directional/depth.vs";
+	const char* fragmentShadowMapDepthFilepath = "Shaders/shadow_map/directional/depth.fs";
 	Shader shadowMapDepth(vertexShadowMapDepthFilepath, fragmentShadowMapDepthFilepath);
 
-	const char* vertexShadowMapLightFilepath = "shaders/shadow_map/directional/light.vs";
-	const char* fragmentShadowMapLightFilepath = "shaders/shadow_map/directional/light.fs";
+	const char* vertexShadowMapLightFilepath = "Shaders/shadow_map/directional/light.vs";
+	const char* fragmentShadowMapLightFilepath = "Shaders/shadow_map/directional/light.fs";
 	Shader shadowMapLight(vertexShadowMapLightFilepath, fragmentShadowMapLightFilepath);
 
     // Prepare default shader for 2D rectangle debugging.
-    const char* vertexDebugFilepath = "shaders/shadow_map/directional/debug_rect.vs";
-    const char* fragmentDebugFilepath = "shaders/shadow_map/directional/debug_rect.fs";
+    const char* vertexDebugFilepath = "Shaders/shadow_map/directional/debug_rect.vs";
+    const char* fragmentDebugFilepath = "Shaders/shadow_map/directional/debug_rect.fs";
     Shader debugShader(vertexDebugFilepath, fragmentDebugFilepath);
 
 	// Set up the Directional Shadow Map object.

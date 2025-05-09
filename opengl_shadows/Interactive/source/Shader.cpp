@@ -1,4 +1,4 @@
-#include "Shader.hpp"
+#include "../include/Shader.hpp"
 
 #include <sstream>
 #include <cstdio>
@@ -93,7 +93,8 @@ GLuint Shader::ParseAndCompile(ShaderType type, std::ifstream& source_file)
         GLchar shader_info[1024];
         GLsizei info_length = 0;
         glGetShaderInfoLog(shader, sizeof(shader_info), &info_length, shader_info);
-        printf("[Shader] Compilation error detected. Info:\n%s", shader_info);
+        shader_info[info_length] = '\0';
+        printf("[Shader] Compilation error detected. Info (length=%d):\n%s", info_length, shader_info);
 
         glDeleteShader(shader);
         return 255; // This is code for "Invalid Shader handle".

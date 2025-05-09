@@ -1,4 +1,5 @@
-#include "Scene.hpp"
+#include "../include/Scene.hpp"
+#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 #include <cstdio>
@@ -29,7 +30,7 @@ void Scene::PostDrawHook() const
     // PostDrawHook called. Do additional draws,
     //  like GUI draws.
 
-	const char* rectangle_position_filepath = "vertices/rectangle_position.txt";
+	const char* rectangle_position_filepath = "Vertices/rectangle_position.txt";
 	VertexAttribute rectangle_position = VertexAttributeParser::ProcessFile(rectangle_position_filepath);
 	if (rectangle_position.data.empty())
     {
@@ -37,7 +38,7 @@ void Scene::PostDrawHook() const
         return;
     }
 
-	const char* rectangle_uv_filepath = "vertices/rectangle_uv.txt";
+	const char* rectangle_uv_filepath = "Vertices/rectangle_uv.txt";
 	VertexAttribute rectangle_uv = VertexAttributeParser::ProcessFile(rectangle_uv_filepath);
 	if (rectangle_uv.data.empty())
     {
@@ -52,14 +53,14 @@ void Scene::PostDrawHook() const
 	GUI.SetTranslation(glm::vec3(0.0f, 0.8f, 0.0f));
 	auto guiModel = GUI.GetModelMatrix();
 
-    const char* vertexGUI = "shaders/rect.vs";
-	const char* fragmentGUI = "shaders/rect.fs";
+    const char* vertexGUI = "Shaders/rect.vs";
+	const char* fragmentGUI = "Shaders/rect.fs";
 	Shader guiShader(vertexGUI, fragmentGUI);
 
 	// Try to load an image from a PNG file.
 	stbi_set_flip_vertically_on_load(true);
 	int width, height, colorChannels;
-	unsigned char* guiImage = stbi_load("images/gui_info.png", &width, &height, &colorChannels, STBI_rgb_alpha);
+	unsigned char* guiImage = stbi_load("Images/gui_info.png", &width, &height, &colorChannels, STBI_rgb_alpha);
 	GLuint gui_texture;
 	if (guiImage)
 	{

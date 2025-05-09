@@ -1,4 +1,4 @@
-#include "VarianceShadowMap.hpp"
+#include "../include/VarianceShadowMap.hpp"
 
 VarianceShadowMap::VarianceShadowMap(unsigned int window_w, unsigned int window_h,
 	unsigned int shadow_w, unsigned int shadow_h,
